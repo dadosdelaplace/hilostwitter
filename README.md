@@ -34,11 +34,27 @@ Javier Álvarez Liébana (@DadosDeLaplace)
 💰 Todo el contenido es libre y gratuito siendo citado (all content is free but well cited is required).
 
 <details>
-  <summary>Contribuciones de #MatesEnDomingo en orden cronológico (haz **click para abrir**) / Contributions to #MatesEnDomingo (click to expand)</summary>
+  <summary>Contribuciones de #MatesEnDomingo en orden cronológico (haz CLICK PARA ABRIR) / Contributions to #MatesEnDomingo (click to expand)</summary>
+  
+<!-- toc -->
+* **#MatesEnDomingo 2021**
+  - 27/07/2021 [🗳⛑ Sorteo de Vietnam de 1969 / Draft Lottery of 1969](https://github.com/)
+  - 06/06/2021 [🎲👻 La historia de la campana de Gauss / The history of Gaussian distribution](https://github.com/)
+* **#MatesEnDomingo 2020**
+  - 11/10/2020 [📊🗳 Ley de Benford / Benford's Law](https://github.com/)️
+  - 06/09/2020 [🚕⛑ Contar taxis y el desembardo de Normandia / Counting on taxis and the Battle of Normandy](https://github.com/)️
+
+<!-- tocstop -->
+  
 </details>
 
 <details>
-  <summary>Otras contribuciones en orden cronológico (haz **click para abrir**) / Other contributions (click to expand)</summary>
+  <summary>Otras contribuciones en orden cronológico (haz CLICK PARA ABRIR) / Other contributions (click to expand)</summary>
+  
+<!-- toc -->
+* **Contribuciones (contributions) 2021**
+  - 17/06/2021 [📊🦖 Cuarteto de Anscombe / Anscombe's quartet](...)️
+<!-- tocstop -->
 </details>
 
 
