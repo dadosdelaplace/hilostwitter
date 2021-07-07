@@ -58,3 +58,13 @@ Javier Álvarez Liébana (@DadosDeLaplace)
 </details>
 
 
+<details>
+  <summary>Divulgación en Instagram (haz CLICK PARA ABRIR) / Contributions on Instagram (click to expand)</summary>
+  
+<!-- toc -->
+* **Contribuciones (contributions) 2021**
+  - 22/06/2021 [👨🏻‍🏫📚 Probabilidad de aprobar las oposiciones / Probability of passing competition exams](...)️
+<!-- tocstop -->
+</details>
+
+
