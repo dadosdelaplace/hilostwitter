@@ -1,6 +1,22 @@
+---
+title: "Draft Lottery for Vietnam war (1969)"
+author: "Javier Álvarez Liébana"
+date: "27th of June 2021"
+output:
+  html_document:
+    theme: paper
+    highlight: kate
+editor_options: 
+  chunk_output_type: console
+---
 
+```{r ajustes, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, fig.showtext = T, fig.retina = 1)
+```
+
+```{r preparacion, message = FALSE}
 rm(list = ls()) # borramos entorno
-setwd(dirname(rstudioapi::getSourceEditorContext()$path)) # fijamos directorio
+# setwd(dirname(rstudioapi::getSourceEditorContext()$path)) # fijamos directorio
 # Instalamos paquetes necesarios
 repos <- "http://cran.us.r-project.org"
 if(!require(ggplot2)) install.packages("ggplot2", repos = repos)
@@ -12,20 +28,19 @@ if(!require(patchwork)) install.packages("patchwork", repos = repos)
 if(!require(colorspace)) install.packages("colorspace", repos = repos)
 if(!require(calendR)) install.packages("calendR", repos = repos)
 if(!require(patchwork)) install.packages("patchwork", repos = repos)
+if(!require(here)) install.packages("here", repos = repos)
+if(!require(glue)) install.packages("glue", repos = repos)
+if(!require(pdftools)) install.packages("pdftools", repos = repos)
+```
 
-# Fuentes para los gráficos
-library(showtext)
-font_add_google("Lobster Two", "lobstertwo")
-font_add_google("Poppins", "poppins")
-showtext_auto()
-
-# ######################################
-# Carga de datos y pre procesamiento
-# ######################################
-
+```{r carga-datos, message = FALSE}
 # Cargamos datos del Draft Lottery del 69
-# Fuente: https://www.randomservices.org/random/data/Draft.html
-datos_draft <- read_csv(file = "./draft_data.csv")
+# Fuente original: https://www.randomservices.org/random/data/Draft.html
+datos_draft <-
+read_csv(file =
+           paste0("https://raw.githubusercontent.com/",
+                  "dadosdelaplace/hilostwitter/main/R/%23matesendomingo/",
+                  "2021_07_27_DRAFT_LOTTERY_VIETNAM/draft_data.csv"))
 
 # Filtramos solo el draft del 1 de diciembre de 1969
 draft_69 <-
@@ -33,7 +48,9 @@ draft_69 <-
          "dias" = datos_draft$D,
          "dias_anual" = 1:length(datos_draft$D), # Nº del día del año
          "papeletas" = datos_draft$N69)
+```
 
+```{r preproc-datos, message = FALSE}
 # Calculamos papeletas «reclutadas» (195 o inferior el número
 # de papeleta) en cada uno de los meses del año
 draft_69_stats <- draft_69 %>% filter(papeletas <= 195) %>% count(meses)
@@ -58,10 +75,14 @@ draft_69_stats <-
          desv_papeletas = media_papeletas - media_esp,
          desv_abs_papeletas = abs(desv_papeletas),
          desv_sq_papeletas = desv_abs_papeletas^2)
+```
 
-# ##################
-# Gráficas
-# ##################
+```{r tema-base-fuentes-plots}
+# Fuentes para los gráficos
+library(showtext)
+font_add_google("Lobster Two", "lobstertwo")
+font_add_google("Poppins", "poppins")
+showtext_auto()
 
 # Tema base
 theme_set(theme_bw())
@@ -93,10 +114,10 @@ theme_update(
   # Márgenes
   plot.margin = # márgenes
     margin(t = 0.5, b = 0.5, r = 0.9, l = 0.9, "cm"))
+```
 
-# #####################################
+```{r fig1, fig.width = 13, fig.height = 8}
 # 1. Scatter plot (puntos)
-# #####################################
 fig1 <- ggplot(draft_69, aes(x = dias_anual, y = papeletas)) +
   # Puntos (color asociado a los meses)
   geom_point(aes(color = meses), size = 4, alpha = 0.8) +
@@ -110,12 +131,20 @@ fig1 <- ggplot(draft_69, aes(x = dias_anual, y = papeletas)) +
        x = "Días del año de nacimiento", y = "Número de la papeleta") +
   # Separación con leyenda
   theme(legend.box.spacing =  unit(0.7, "cm"))
+fig1
 
-# #####################################
-# 2. Scatter plot + umbral 195
-#    + anotaciones
-# #####################################
+# Exportamos
+ruta <- here("plots", "#matesendomingo",
+             "2021_07_27_DRAFT_LOTTERY_VIETNAM", "fig1")
+ggsave(glue("{ruta}.pdf"),
+       width = 13, height = 8, device = cairo_pdf)
+pdf_convert(glue("{ruta}.pdf"), filenames = glue("{ruta}.png"),
+            format = "png", dpi = 300)
 
+```
+
+```{r fig2, fig.width = 13, fig.height = 8}
+# 2. Scatter plot + umbral 195 + anotaciones
 fig2 <- ggplot(draft_69, aes(x = dias_anual, y = papeletas)) +
   # Puntos (color asociado a los meses)
   geom_point(aes(color = meses), size = 4, alpha = 0.8) +
@@ -148,12 +177,19 @@ fig2 <- ggplot(draft_69, aes(x = dias_anual, y = papeletas)) +
                 "Datos: Draft lottery (1969)"),
        x = "Días del año de nacimiento", y = "Número de la papeleta") +
   theme(legend.box.spacing =  unit(2.7, "cm"))
+fig2
 
-# #####################################
-# 3. Scatter plot + umbral 195 +
-#    anotaciones + líneas verticales
-# #####################################
+# Exportamos
+ruta <- here("plots", "#matesendomingo",
+             "2021_07_27_DRAFT_LOTTERY_VIETNAM", "fig2")
+ggsave(glue("{ruta}.pdf"),
+       width = 13, height = 8, device = cairo_pdf)
+pdftools::pdf_convert(glue("{ruta}.pdf"), filenames = glue("{ruta}.png"),
+                      format = "png", dpi = 300)
+```
 
+```{r fig3, fig.width = 13, fig.height = 8}
+# Scatter plot + umbral 195 + anotaciones + líneas verticales
 fig3 <- ggplot(draft_69, aes(x = dias_anual, y = papeletas)) +
   # Puntos (color asociado a los meses)
   geom_point(aes(color = meses), size = 4, alpha = 0.8) +
@@ -216,12 +252,19 @@ fig3 <- ggplot(draft_69, aes(x = dias_anual, y = papeletas)) +
                 "Datos: Draft lottery (1969)"),
        x = "Días del año de nacimiento", y = "Número de la papeleta") +
   theme(legend.box.spacing =  unit(2.7, "cm"))
+fig3
 
+# Exportamos
+ruta <- here("plots", "#matesendomingo",
+             "2021_07_27_DRAFT_LOTTERY_VIETNAM", "fig3")
+ggsave(glue("{ruta}.pdf"),
+       width = 13, height = 8, device = cairo_pdf)
+pdftools::pdf_convert(glue("{ruta}.pdf"), filenames = glue("{ruta}.png"),
+                      format = "png", dpi = 300)
+```
 
-# #####################################
-# 4. Calendario relleno
-# #####################################
-
+```{r fig4, fig.width = 13, fig.height = 8}
+# Calendario relleno
 fig4 <-
   calendR(year = 1968, # El año en sí da igual, elegimos uno con bisiestos
           font.family = "poppins",
@@ -235,13 +278,20 @@ fig4 <-
           special.days = # Días destacados: los que papeleta < 195
             draft_69$dias_anual[draft_69$papeletas < 195],
           special.col = c("#E26E6E") # Color de los días destacados
-          )     
+          ) 
+fig4
 
-# #####################################
-# 5. Barras horizontales con el nº de
-#    días reclutados y sus % relativos
-# #####################################
+# Exportamos
+ruta <- here("plots", "#matesendomingo",
+             "2021_07_27_DRAFT_LOTTERY_VIETNAM", "fig4")
+ggsave(glue("{ruta}.pdf"),
+       width = 13, height = 8, device = cairo_pdf)
+pdftools::pdf_convert(glue("{ruta}.pdf"), filenames = glue("{ruta}.png"),
+                      format = "png", dpi = 300)
+```
 
+```{r fig5, fig.width = 13, fig.height = 8}
+# 5. Barras horizontales con el nº días reclutados y sus % relativos
 fig5 <- ggplot(draft_69_stats, aes(fill = meses, color = meses)) +
   # Columnas
   geom_col(aes(x = n_papeletas, y = meses), alpha = 0.8) +
@@ -273,12 +323,19 @@ fig5 <- ggplot(draft_69_stats, aes(fill = meses, color = meses)) +
                 "Datos: Draft lottery (1969)"),
        x = "Número de días «alistados» a la guerra", y = "Meses") +
   theme(legend.box.spacing =  unit(2.7, "cm"))
+fig5
 
-# #####################################
-# 6. Barras verticales con la media 
-#    de las papeletas por mes
-# #####################################
+# Exportamos
+ruta <- here("plots", "#matesendomingo",
+             "2021_07_27_DRAFT_LOTTERY_VIETNAM", "fig5")
+ggsave(glue("{ruta}.pdf"),
+       width = 13, height = 8, device = cairo_pdf)
+pdftools::pdf_convert(glue("{ruta}.pdf"), filenames = glue("{ruta}.png"),
+                      format = "png", dpi = 300)
+```
 
+```{r fig6, fig.width = 13, fig.height = 8}
+# 6. Barras verticales con la media de las papeletas por mes
 fig6 <- ggplot(draft_69_stats, aes(fill = meses, color = meses)) +
   # Columnas
   geom_col(aes(y = media_papeletas, x = meses), alpha = 0.8) +
@@ -308,13 +365,20 @@ fig6 <- ggplot(draft_69_stats, aes(fill = meses, color = meses)) +
                 "Datos: Draft lottery (1969)"),
        x = "Meses", y = "Media del nº de papeleta") +
   theme(legend.box.spacing =  unit(2.7, "cm"))
+fig6
 
+# Exportamos
+ruta <- here("plots", "#matesendomingo",
+             "2021_07_27_DRAFT_LOTTERY_VIETNAM", "fig6")
+ggsave(glue("{ruta}.pdf"),
+       width = 13, height = 8, device = cairo_pdf)
+pdftools::pdf_convert(glue("{ruta}.pdf"), filenames = glue("{ruta}.png"),
+                      format = "png", dpi = 300)
+```
 
-# #####################################
-# 7. Barras verticales de desviaciones
-#   entre el número de papeleta medio y lo esperado
-# #####################################
-
+```{r fig7, fig.width = 13, fig.height = 8}
+# 7. Barras verticales de desviaciones entre el
+# número de papeleta medio y lo esperado
 fig7 <- ggplot(draft_69_stats, aes(fill = meses, color = meses)) +
   geom_col(aes(y = desv_papeletas, x = meses),  alpha = 0.8) +
   coord_cartesian(clip = "off") +
@@ -325,42 +389,19 @@ fig7 <- ggplot(draft_69_stats, aes(fill = meses, color = meses)) +
                 "Datos: Draft lottery (1969)"),
        x = "Meses", y = "Desviación del sorteo vs lo esperado") +
   theme(legend.box.spacing =  unit(2.7, "cm"))
+fig7
 
+# Exportamos
+ruta <- here("plots", "#matesendomingo",
+             "2021_07_27_DRAFT_LOTTERY_VIETNAM", "fig7")
+ggsave(glue("{ruta}.pdf"),
+       width = 13, height = 8, device = cairo_pdf)
+pdftools::pdf_convert(glue("{ruta}.pdf"), filenames = glue("{ruta}.png"),
+                      format = "png", dpi = 300)
+```
 
-# #####################################
-# 7. Barras verticales de desviaciones
-#   entre el número de papeleta medio y lo esperado
-# #####################################
-
-
-# #####################################
-# 7. Simulación de un diagrama de
-#    puntos esperado del nº medio de
-#    papeleta
-# #####################################
-
-
-# Primero vemos como quedaría de forma uniforme
-rnd_papeletas <- sample(1:366, 366, replace = FALSE)
-rnd_draft <- data.frame("meses" = draft_69$meses,
-                        "dias_anual" = draft_69$dias_anual,
-                        "papeletas" = rnd_papeletas)
-rnd_draft_stats <- rnd_draft %>% group_by(meses) %>%
-  summarize(media_papeletas = mean(papeletas))
-
-fig8 <- ggplot(rnd_draft_stats, aes(x = meses, y = media_papeletas,
-                                   color = meses)) +
-  geom_point(size = 8, alpha = 0.8, show.legend = FALSE) +
-  scale_color_stata() + scale_fill_stata() +
-  labs(title = "GRÁFICO ESPERADO", x = NULL, y = NULL) +
-  theme(axis.ticks.x = element_blank(), axis.text.x = element_blank(),
-        axis.ticks.y = element_blank(), axis.text.y = element_blank())
-
-# #####################################
-# 9. Regresión del mes vs número de
-#    papeleta medio
-# #####################################
-
+```{r fig9, fig.width = 13, fig.height = 8}
+# 9. Regresión del mes vs número de papeleta medio
 reg <- lm(draft_69_stats$media_papeletas ~
             as.numeric(draft_69_stats$meses))
 fig9 <- ggplot(draft_69_stats, aes(x = meses, y = media_papeletas,
@@ -399,15 +440,24 @@ fig9 <- ggplot(draft_69_stats, aes(x = meses, y = media_papeletas,
                 "Datos: Draft lottery (1969)"),
        x = "Meses (X)", y = "Nº papeletas medio (Y)") +
   theme(legend.box.spacing =  unit(2.7, "cm"))
+fig9
 
-# #####################################
-# 10. Scatter + desviaciones horiz.
-#     respecto a lo esperado
-# #####################################
+# Exportamos
+ruta <- here("plots", "#matesendomingo",
+             "2021_07_27_DRAFT_LOTTERY_VIETNAM", "fig9")
+ggsave(glue("{ruta}.pdf"),
+       width = 13, height = 8, device = cairo_pdf)
+pdftools::pdf_convert(glue("{ruta}.pdf"), filenames = glue("{ruta}.png"),
+                      format = "png", dpi = 300)
+```
+
+```{r fig10, fig.width = 13, fig.height = 8}
+# 10. Scatter + desviaciones horiz. respecto a lo esperado
 
 # Calculamos la media global del número de papaleta
 media_global <- mean(draft_69$papeletas)
 draft_69_join <- left_join(draft_69, draft_69_stats, by = "meses")
+
 fig10 <- ggplot(draft_69_join, aes(x = papeletas, y = meses, color = meses)) +
   # Segmento horizontal con la desviación hasta la media
   geom_segment(aes(x = media_global, xend = media_papeletas,
@@ -465,14 +515,21 @@ fig10 <- ggplot(draft_69_join, aes(x = papeletas, y = meses, color = meses)) +
                 "(Cédric Scherer)\nDatos: Draft lottery (1969)"),
        x = "Papeletas", y = "Meses") +
   theme(legend.position = "none")
+fig10
 
-# #####################################
-# 11. Gráfico de cajas y bigotes + 
-#     densidad + simulación Monte Carlo
-# #####################################
+# Exportamos
+ruta <- here("plots", "#matesendomingo",
+             "2021_07_27_DRAFT_LOTTERY_VIETNAM", "fig10")
+ggsave(glue("{ruta}.pdf"),
+       width = 13, height = 8, device = cairo_pdf)
+pdftools::pdf_convert(glue("{ruta}.pdf"), filenames = glue("{ruta}.png"),
+                      format = "png", dpi = 300)
+```
 
-# Fijamos semilla aleatoria para que siempre
-# salga la misma generación aleatoria
+```{r fig11, fig.width = 13, fig.height = 8}
+# 11. Gráfico de cajas y bigotes + densidad + simulación Monte Carlo
+
+# Fijamos semilla aleatoria para que siempre salga la misma generación
 set.seed(123456789)
 
 # Simulamos 1000 draft distintos y guardamos como 
@@ -497,9 +554,8 @@ desv_simul$desv_abs <- abs(desv_simul$media - media_global)
 sum_desv_abs <- desv_simul %>% group_by(simulacion) %>%
   summarize(sum_desv_abs = sum(desv_abs))
 
-# Calculamos el valor absoluto de la suma de desviaciones
-# de cada simulación respecto a la media de la suma de
-# desviaciones de cada simulación
+# Calculamos valor absoluto de la suma de desviaciones de cada simulación
+# respecto a la media de la suma de desviaciones de cada simulación
 sum_desv_abs$color <- abs(sum_desv_abs$sum_desv_abs -
   mean(sum_desv_abs$sum_desv_abs))
 
@@ -589,8 +645,19 @@ fig11 <-
        color = "Desv. absoluta\nresp. media") +
   theme(axis.ticks.x = element_blank(), axis.text.x = element_blank(),
         axis.ticks.y = element_blank(), axis.text.y = element_blank())
+fig11
 
+# Exportamos
+ruta <- here("plots", "#matesendomingo",
+             "2021_07_27_DRAFT_LOTTERY_VIETNAM", "fig11")
+ggsave(glue("{ruta}.pdf"),
+       width = 13, height = 8, device = cairo_pdf)
+pdftools::pdf_convert(glue("{ruta}.pdf"), filenames = glue("{ruta}.png"),
+                      format = "png", dpi = 300)
+```
 
+***
 
-
-
+```{r sesion}
+sessionInfo()
+```
