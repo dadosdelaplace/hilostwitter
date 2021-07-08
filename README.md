@@ -71,7 +71,7 @@ Javier Álvarez Liébana (@DadosDeLaplace)
 
 ###  [27/06/2021 🗳⛑ Sorteo de Vietnam de 1969 / Draft Lottery (Vietnam) of 1969](https://github.com/dadosdelaplace/hilostwitter/tree/main/plots/%23matesendomingo/2021_07_27_DRAFT_LOTTERY_VIETNAM)
 
-[🧶 HILO EN TWITTER / TWITTER THREAD](https://twitter.com/dadosdelaplace)
+[🧶 HILO EN TWITTER / TWITTER THREAD](https://twitter.com/DadosdeLaplace/status/1409178160860733443)
 
 ![](https://github.com/dadosdelaplace/hilostwitter/blob/main/plots/%23matesendomingo/2021_07_27_DRAFT_LOTTERY_VIETNAM/fig3.png)
 *Gráfico de puntos (scatter) + línea horizontal + líneas verticales (para visualizar mejor la desproporción por mes): meses en el eje x, número de la papeleta asociada a cada día del mes en el eje y*
@@ -81,9 +81,6 @@ Javier Álvarez Liébana (@DadosDeLaplace)
 
 ![dsdasda](https://github.com/dadosdelaplace/hilostwitter/blob/main/plots/%23matesendomingo/2021_07_27_DRAFT_LOTTERY_VIETNAM/fig5.png)
 *Gráfico de barras horizontales del número de días reclutados por mes*
-
-![](https://github.com/dadosdelaplace/hilostwitter/blob/main/plots/%23matesendomingo/2021_07_27_DRAFT_LOTTERY_VIETNAM/fig7.png)
-*Desviación del número medio de papeleta por mes respecto a lo esperado si hubiese sido aleatorio*
 
 ![](https://github.com/dadosdelaplace/hilostwitter/blob/main/plots/%23matesendomingo/2021_07_27_DRAFT_LOTTERY_VIETNAM/fig9.png)
 *Regresión mes vs número medio de papeleta por mes*
