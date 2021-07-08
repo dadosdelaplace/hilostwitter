@@ -38,11 +38,11 @@ Javier Álvarez Liébana (@DadosDeLaplace)
   
 <!-- toc -->
 * **#MatesEnDomingo 2021**
-  - 27/07/2021 [🗳⛑ Sorteo de Vietnam de 1969 / Draft Lottery of 1969](https://github.com/)
-  - 06/06/2021 [🎲👻 La historia de la campana de Gauss / The history of Gaussian distribution](https://github.com/)
+  - 27/06/2021 [🗳⛑ Sorteo de Vietnam de 1969 / Draft Lottery of 1969](https://github.com/dadosdelaplace/hilostwitter/tree/main/plots/%23matesendomingo/2021_07_27_DRAFT_LOTTERY_VIETNAM)
+  - 06/06/2021 [🎲👻 La historia de la campana de Gauss / The history of Gaussian distribution](.)
 * **#MatesEnDomingo 2020**
   - 11/10/2020 [📊🗳 Ley de Benford / Benford's Law](https://github.com/)️
-  - 06/09/2020 [🚕⛑ Contar taxis y el desembardo de Normandia / Counting on taxis and the Battle of Normandy](https://github.com/)️
+  - 06/09/2020 [🚕⛑ Contar taxis y el desembardo de Normandia / Counting on taxis and the Battle of Normandy](.)️
 
 <!-- tocstop -->
   
@@ -66,5 +66,22 @@ Javier Álvarez Liébana (@DadosDeLaplace)
   - 22/06/2021 [👨🏻‍🏫📚 Probabilidad de aprobar las oposiciones / Probability of passing competition exams](...)️
 <!-- tocstop -->
 </details>
+
+***
+
+###  [27/06/2021 🗳⛑ Sorteo de Vietnam de 1969 / Draft Lottery of 1969](https://github.com/dadosdelaplace/hilostwitter/tree/main/plots/%23matesendomingo/2021_07_27_DRAFT_LOTTERY_VIETNAM)
+
+![dsdasda](https://github.com/dadosdelaplace/hilostwitter/blob/main/plots/%23matesendomingo/2021_07_27_DRAFT_LOTTERY_VIETNAM/fig1.png)
+![dsdasda](https://github.com/dadosdelaplace/hilostwitter/blob/main/plots/%23matesendomingo/2021_07_27_DRAFT_LOTTERY_VIETNAM/fig2.png)
+![dsdasda](https://github.com/dadosdelaplace/hilostwitter/blob/main/plots/%23matesendomingo/2021_07_27_DRAFT_LOTTERY_VIETNAM/fig3.png)
+![dsdasda](https://github.com/dadosdelaplace/hilostwitter/blob/main/plots/%23matesendomingo/2021_07_27_DRAFT_LOTTERY_VIETNAM/fig4.png)
+![dsdasda](https://github.com/dadosdelaplace/hilostwitter/blob/main/plots/%23matesendomingo/2021_07_27_DRAFT_LOTTERY_VIETNAM/fig5.png)
+![dsdasda](https://github.com/dadosdelaplace/hilostwitter/blob/main/plots/%23matesendomingo/2021_07_27_DRAFT_LOTTERY_VIETNAM/fig6.png)
+![dsdasda](https://github.com/dadosdelaplace/hilostwitter/blob/main/plots/%23matesendomingo/2021_07_27_DRAFT_LOTTERY_VIETNAM/fig7.png)
+![dsdasda](https://github.com/dadosdelaplace/hilostwitter/blob/main/plots/%23matesendomingo/2021_07_27_DRAFT_LOTTERY_VIETNAM/fig9.png)
+![dsdasda](https://github.com/dadosdelaplace/hilostwitter/blob/main/plots/%23matesendomingo/2021_07_27_DRAFT_LOTTERY_VIETNAM/fig10.png)
+![dsdasda](https://github.com/dadosdelaplace/hilostwitter/blob/main/plots/%23matesendomingo/2021_07_27_DRAFT_LOTTERY_VIETNAM/fig11.png)
+
+***
 
 
