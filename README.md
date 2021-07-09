@@ -53,7 +53,7 @@ Javier Álvarez Liébana (@DadosDeLaplace)
   
 <!-- toc -->
 * **Contribuciones (contributions) 2021**
-  - 17/06/2021 [📊🦖 Cuarteto de Anscombe / Anscombe's quartet](...)️
+  - 17/06/2021 [📊🦖 Cuarteto de Anscombe / Anscombe's quartet](https://github.com/dadosdelaplace/hilostwitter/tree/main/plots/%23matesendomingo/2021_06_17_CUARTETO_ANSCOMBE)️
 <!-- tocstop -->
 </details>
 
@@ -106,8 +106,32 @@ Javier Álvarez Liébana (@DadosDeLaplace)
 
 ***
 
+### [17/06/2021 📊🦖 Cuarteto de Anscombe / Anscombe's quartet](https://github.com/dadosdelaplace/hilostwitter/tree/main/plots/%23matesendomingo/2021_06_17_CUARTETO_ANSCOMBE)
 
-###  [06/06/2021 🎲👻 La historia de la campana de Gauss / The history of Gaussian distribution](https://github.com/dadosdelaplace/hilostwitter/tree/main/plots/%23matesendomingo/2021_06_06_CENTRAL_LIMIT_THEOREM)
+[🧶 HILO EN TWITTER / TWITTER THREAD](https://twitter.com/DadosdeLaplace/status/1405572972912562181)
+
+![](https://github.com/dadosdelaplace/hilostwitter/blob/main/plots/%23matesendomingo/2021_06_17_CUARTETO_ANSCOMBE/fig1.png)
+*Cajas y bigotes de las 4 variables X*
+
+![](https://github.com/dadosdelaplace/hilostwitter/blob/main/plots/%23matesendomingo/2021_06_17_CUARTETO_ANSCOMBE/fig2.png)
+*Cajas y bigotes de las 4 variables X con el scatter de los datos*
+
+![](https://github.com/dadosdelaplace/hilostwitter/blob/main/plots/%23matesendomingo/2021_06_17_CUARTETO_ANSCOMBE/fig3.png)
+*Cajas y bigotes de las 4 variables X con el scatter de los datos y las funciones de densidad*
+
+![](https://github.com/dadosdelaplace/hilostwitter/blob/main/plots/%23matesendomingo/2021_06_17_CUARTETO_ANSCOMBE/fig5.png)
+*Cajas y bigotes de las 4 variables Y con el scatter de los datos y las funciones de densidad*
+
+![](https://github.com/dadosdelaplace/hilostwitter/blob/main/plots/%23matesendomingo/2021_06_17_CUARTETO_ANSCOMBE/fig10.png)
+*Cuarteto de Anscombre: cuatro pares de datos (X, Y) con misma media, desviación típica y misma recta de regresión en su ajuste*
+
+![](https://github.com/dadosdelaplace/hilostwitter/blob/main/plots/%23matesendomingo/2021_06_17_CUARTETO_ANSCOMBE/gif_anscombe.gif)
+
+*Conjunto «Datasaurus dozen»: todos los pares de puntos tienen la misma media, misma desviación típica y misma recta de regresión en su ajuste*
+
+***
+
+### [06/06/2021 🎲👻 La historia de la campana de Gauss / The history of Gaussian distribution](https://github.com/dadosdelaplace/hilostwitter/tree/main/plots/%23matesendomingo/2021_06_06_CENTRAL_LIMIT_THEOREM)
 
 [🧶 HILO EN TWITTER / TWITTER THREAD](https://twitter.com/DadosdeLaplace/status/1401584861043908610)
 
@@ -142,6 +166,5 @@ Javier Álvarez Liébana (@DadosDeLaplace)
 *Teorema central del límite: media de 2-5-10-20-50 variables aleatorias de Poisson*
 
 ***
-
 
 
