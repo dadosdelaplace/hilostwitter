@@ -41,8 +41,8 @@ Javier Álvarez Liébana (@DadosDeLaplace)
   - 27/06/2021 [🗳⛑ Sorteo de Vietnam de 1969 / Draft Lottery (Vietnam) of 1969](https://github.com/dadosdelaplace/hilostwitter/tree/main/plots/%23matesendomingo/2021_07_27_DRAFT_LOTTERY_VIETNAM)
   - 06/06/2021 [🎲👻 La historia de la campana de Gauss / The history of Gaussian distribution](https://github.com/dadosdelaplace/hilostwitter/tree/main/plots/%23matesendomingo/2021_06_06_CENTRAL_LIMIT_THEOREM)
 * **#MatesEnDomingo 2020**
-  - 11/10/2020 [📊🗳 Ley de Benford / Benford's Law](https://github.com/)️
-  - 06/09/2020 [🚕⛑ Contar taxis y el desembardo de Normandia / Counting on taxis and the Battle of Normandy](.)️
+  - 11/10/2020 [📊🗳 Ley de Benford / Benford's Law](...)️
+  - 06/09/2020 [🚕⛑ Contar taxis y el desembardo de Normandia / Counting on taxis and the Battle of Normandy](...)️
 
 <!-- tocstop -->
   
@@ -63,7 +63,7 @@ Javier Álvarez Liébana (@DadosDeLaplace)
   
 <!-- toc -->
 * **Contribuciones (contributions) 2021**
-  - 22/06/2021 [👨🏻‍🏫📚 Probabilidad de aprobar las oposiciones / Probability of passing competition exams](...)️
+  - 22/06/2021 [👨🏻‍🏫📚 Probabilidad de aprobar las oposiciones / Probability of passing competition exams](https://github.com/dadosdelaplace/hilostwitter/tree/main/plots/%23matesendomingo/2021_06_22_PASSING_EXAMS)️
 <!-- tocstop -->
 </details>
 
@@ -92,6 +92,20 @@ Javier Álvarez Liébana (@DadosDeLaplace)
 *Gráfico de cajas y bigotes + densidad + simulación Monte Carlo: simulamos 1000 draft distintos y guardamos como quedarían las papeletas a lo largo de los meses para ver lo extremo del resultado real*
 
 ***
+
+###  [22/06/2021 👨🏻‍🏫📚 Probabilidad de aprobar las oposiciones / Probability of passing competition exams](https://github.com/dadosdelaplace/hilostwitter/tree/main/plots/%23matesendomingo/2021_06_22_PASSING_EXAMS)
+
+[📸 INFOGRAFÍA EN INSTAGRAM / CONTRIBUTION ON INSTAGRAM](https://www.instagram.com/javieralvarezliebana/)
+
+![](https://github.com/dadosdelaplace/hilostwitter/blob/main/plots/%23matesendomingo/2021_06_22_PASSING_EXAMS/fig1.png)
+*Probabilidad de saberse {0, 1, 2, 3, 4, 5} temas en unas oposiciones de 71 temas y 5 bolas*
+
+![](https://github.com/dadosdelaplace/hilostwitter/blob/main/plots/%23matesendomingo/2021_06_22_PASSING_EXAMS/fig2.png)
+*Probabilidad de saberse al menos {0, 1, 2, 3, 4, 5} temas en unas oposiciones de 71 temas y 5 bolas*
+
+
+***
+
 
 ###  [06/06/2021 🎲👻 La historia de la campana de Gauss / The history of Gaussian distribution](https://github.com/dadosdelaplace/hilostwitter/tree/main/plots/%23matesendomingo/2021_06_06_CENTRAL_LIMIT_THEOREM)
 
