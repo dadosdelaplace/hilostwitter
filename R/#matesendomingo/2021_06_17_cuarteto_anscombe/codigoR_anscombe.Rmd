@@ -1,0 +1,678 @@
+---
+title: "codigoR_Anscombe"
+author: "Javier Álvarez Liébana"
+date: "17th of June 2021"
+output:
+  html_document:
+    theme: paper
+    highlight: kate
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r ajustes, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, fig.showtext = T, fig.retina = 1)
+```
+
+```{r preparacion, message = FALSE}
+rm(list = ls()) # borramos entorno
+# setwd(dirname(rstudioapi::getSourceEditorContext()$path)) # fijamos directorio
+# Instalamos paquetes necesarios
+repos <- "http://cran.us.r-project.org"
+if(!require(ggplot2)) install.packages("ggplot2", repos = repos)
+if(!require(latex2exp)) install.packages("latex2exp", repos = repos)
+if(!require(tidyverse)) install.packages("tidyverse", repos = repos)
+if(!require(lubridate)) install.packages("lubridate", repos = repos)
+if(!require(ggthemes)) install.packages("ggthemes", repos = repos)
+if(!require(patchwork)) install.packages("patchwork", repos = repos)
+if(!require(colorspace)) install.packages("colorspace", repos = repos)
+if(!require(calendR)) install.packages("calendR", repos = repos)
+if(!require(here)) install.packages("here", repos = repos)
+if(!require(glue)) install.packages("glue", repos = repos)
+if(!require(pdftools)) install.packages("pdftools", repos = repos)
+if(!require(ggdist)) install.packages("ggdist", repos = repos)
+if(!require(gghalves)) devtools::install_github("erocoar/gghalves")
+if(!require(datasauRus)) install.packages("datasauRus", repos = repos)
+if(!require(gganimate)) install.packages("gganimate", repos = repos)
+if(!require(grid)) install.packages("grid", repos = repos)
+```
+
+```{r tema-base-fuentes-plots}
+# Fuentes para los gráficos
+library(showtext)
+font_add_google("Lobster Two", "lobstertwo")
+font_add_google("Poppins", "poppins")
+showtext_auto()
+
+# Tema base
+theme_set(theme_bw())
+theme_update(
+  # Fuentes y ajustes de la leyenda
+  legend.text = element_text(size = 15, family = "poppins"),
+  legend.title = element_text(face = "bold", size = 17,
+                              family = "poppins"),
+  # Fuentes de los textos
+  text = element_text(family = "poppins", size = 15, color = "black"),
+  # Fuentes y ajustes de título, subtítulo y caption
+  plot.title = element_text(family = "poppins", size = 25,
+                            face = "bold", color = "#2a475e"),
+  plot.subtitle = element_text(family = "poppins", size = 15,
+                               face = "bold", color = "black"),
+  plot.caption = element_text(size = 15, family = "poppins"),
+  # Fuentes y ajustes de los ejes
+  axis.text = element_text(size = 15, color = "grey50",
+                           family = "poppins"),
+  axis.title = element_text(size = 19, family = "poppins"),
+  axis.ticks = element_blank(), axis.line = element_line(colour = "grey50"),
+  # Ajustes del grid
+  rect = element_blank(), panel.grid = element_line(color = "#b4aea9"),
+  panel.grid.minor = element_blank(),
+  panel.grid.major.x = element_blank(),
+  panel.grid.major.y = element_line(linetype = "dashed"),
+  plot.background =
+    element_rect(fill = "#fbf9f4", color = "#fbf9f4"),
+  # Márgenes
+  plot.margin = # márgenes
+    margin(t = 0.5, b = 0.5, r = 0.9, l = 0.9, "cm"))
+```
+
+```{r datos}
+# Cuarteto de anscombe del paquete datasets: pares de variables (X, Y)
+datos_anscombe <-
+  as_tibble(data.frame("x" = unlist(anscombe[, 1:4]),
+                       "y" = unlist(anscombe[, 5:8]),
+                       "par" = as.factor(rep(1:4, each = dim(anscombe)[1]))))
+
+# Estadísticas por pares: medianas, modas y desviaciones típicas
+datos_anscombe <- datos_anscombe %>% group_by(par) %>%
+  mutate(mediana_x = median(x), mediana_y = median(y),
+         media_x = mean(x), media_y = mean(y),
+         sd_x = sd(x), sd_y = sd(y))
+
+# Paleta de colores
+pal <- c("#4E79A7", "#F28E2B", "#E15759",  "#76B7B2")
+
+# pares (X,Y) por separado
+datos_anscombe1 <- datos_anscombe %>% filter(par == 1)
+datos_anscombe2 <- datos_anscombe %>% filter(par == 2)
+datos_anscombe3 <- datos_anscombe %>% filter(par == 3)
+datos_anscombe4 <- datos_anscombe %>% filter(par == 4)
+```
+   
+```{r fig1, fig.width = 13, fig.height = 8}
+# Variables X
+fig1 <- ggplot(datos_anscombe, aes(x = x, y = par, color = par)) + # datos
+  geom_boxplot(size = 1.5) + # Boxplots sin nada más
+  scale_x_continuous(limits = c(0, 19)) + #fijamos escala (para incluir al 0)
+  scale_color_tableau() + # Escala de colores de tableu
+  labs(x = "Variable X", y = "Par del cuarteto", # Etiquetas de los ejes
+       title = "CUARTETO DE ANSCOMBE: gráfico de cajas y bigotes",
+       subtitle =
+         paste0("Gráfico: Javier Álvarez Liébana (@DadosDeLaplace)\n",
+                "Datos: F.J. Anscombe en «Graphs in Statistical Analysis», ",
+                "Amer. Statis. 27, 1973")) +
+  annotate(geom = "curve", x = 16.5, xend = 18.9, y = 4.35, yend = 4.1,
+           color = "black", curvature = -0.5, size = 1.1,
+           arrow = arrow(length = unit(3.5, "mm"))) +
+  annotate(geom = "text", x = 16.1, y = 4.35,
+           label = "Dato atípico del par 4", size = 7,
+           hjust = "right", family = "lobstertwo")  +
+  annotate(geom = "curve", x = 14, xend = 11.6, y = 3.7, yend = 3.3,
+           color = "black", curvature = 0.3, size = 1.1,
+           arrow = arrow(length = unit(3.5, "mm"))) +
+  annotate(geom = "text", x = 14.1, y = 3.7, size = 7,
+           label = "Percentil 75 (P75)\no cuartil 3 (Q3)",
+           hjust = "left", family = "lobstertwo") +
+  annotate(geom = "curve", x = 14,
+           xend = median((datos_anscombe %>% filter(par == 1))$x),
+           y = 1.5, yend = 1.3,
+           color = "black", curvature = -0.5, size = 1.1,
+           arrow = arrow(length = unit(3.5, "mm"))) +
+  annotate(geom = "text", x = 14.1, y = 1.6, size = 7,
+           label = "Percentil 50 (P50)\no MEDIANA",
+           hjust = "left", family = "lobstertwo")  +
+  annotate(geom = "curve", x = 4.5,
+           xend = quantile((datos_anscombe %>% filter(par == 2))$x)[2],
+           y = 2.5, yend = 2.3,
+           color = "black", curvature = -0.4, size = 1.1,
+           arrow = arrow(length = unit(3.5, "mm"))) +
+  annotate(geom = "text", x = 4.3, y = 2.6, size = 7,
+           label = "Percentil 25 (P25)\no cuartil 1 (Q1)",
+           hjust = "right", family = "lobstertwo")
+fig1
+
+# Exportamos
+ruta <- here("plots", "#matesendomingo",
+             "2021_06_17_CUARTETO_ANSCOMBE", "fig1")
+ggsave(glue("{ruta}.pdf"),
+       width = 13, height = 8, device = cairo_pdf)
+pdftools::pdf_convert(glue("{ruta}.pdf"), filenames = glue("{ruta}.png"),
+                      format = "png", dpi = 300)
+```
+
+```{r fig2, fig.width = 13, fig.height = 8}
+# Variable X con puntos
+fig2 <- ggplot(datos_anscombe, aes(x = x, y = par, color = par)) + # datos
+  geom_boxplot(size = 1.2, outlier.alpha = 0.5) + # Boxplots sin nada más
+  geom_point(size = 9, alpha = 0.3) +  # puntos
+  scale_x_continuous(limits = c(0, 19)) + #fijamos escala (para incluir al 0)
+  scale_color_tableau() + # Escala de colores de tableu
+  labs(x = "Variable X", y = "Par del cuarteto", # Etiquetas de los ejes
+       title = "CUARTETO DE ANSCOMBE: gráfico de cajas y bigotes",
+       subtitle =
+         paste0("Gráfico: Javier Álvarez Liébana (@DadosDeLaplace)\n",
+                "Datos: F.J. Anscombe en «Graphs in Statistical Analysis», ",
+                "Amer. Statis. 27, 1973"))
+fig2
+
+# Exportamos
+ruta <- here("plots", "#matesendomingo",
+             "2021_06_17_CUARTETO_ANSCOMBE", "fig2")
+ggsave(glue("{ruta}.pdf"),
+       width = 13, height = 8, device = cairo_pdf)
+pdftools::pdf_convert(glue("{ruta}.pdf"), filenames = glue("{ruta}.png"),
+                      format = "png", dpi = 300)
+```
+
+```{r fig3, fig.width = 13, fig.height = 8}
+# Variable X con puntos + densidad
+fig3 <- ggplot(datos_anscombe,
+                 aes(x = x, y = as.numeric(par) - 0.25,
+                     color = par)) + # datos
+  geom_boxplot(size = 1.2, outlier.alpha = 0.5) + # Boxplots sin nada más
+  geom_point(size = 9, alpha = 0.25) +  # puntos
+  stat_halfeye(aes(y = as.numeric(par), color = par,
+                   fill = after_scale(lighten(color, .5))),
+               shape = 18, point_size = 3, interval_size = 1.8,
+               adjust = .5, .width = c(0, 1)) +
+  scale_color_tableau() + # Escala de colores de tableu
+  labs(x = "Variable X", y = "Par del cuarteto", # Etiquetas de los ejes
+       title = "CUARTETO DE ANSCOMBE: gráfico de cajas y bigotes",
+       subtitle =
+         paste0("Gráfico: Javier Álvarez Liébana (@DadosDeLaplace)\n",
+                "Datos: F.J. Anscombe en «Graphs in Statistical Analysis», ",
+                "Amer. Statis. 27, 1973")) 
+fig3
+
+# Exportamos
+ruta <- here("plots", "#matesendomingo",
+             "2021_06_17_CUARTETO_ANSCOMBE", "fig3")
+ggsave(glue("{ruta}.pdf"),
+       width = 13, height = 8, device = cairo_pdf)
+pdftools::pdf_convert(glue("{ruta}.pdf"), filenames = glue("{ruta}.png"),
+                      format = "png", dpi = 300)
+```
+
+```{r fig4, fig.width = 13, fig.height = 8}
+# Variables Y
+fig4 <- ggplot(datos_anscombe, aes(x = y, y = par, color = par)) + # datos
+  geom_boxplot(size = 1.5) + # Boxplots sin nada más
+  scale_x_continuous(limits = c(0, 13)) + #fijamos escala (para incluir al 0)
+  scale_color_tableau() + # Escala de colores de tableu
+  labs(x = "Variable Y",
+       y = TeX("Par del cuarteto", bold = TRUE), # Etiquetas de los ejes
+       title = "CUARTETO DE ANSCOMBE: gráfico de cajas y bigotes",
+       subtitle =
+         paste0("Gráfico: Javier Álvarez Liébana (@DadosDeLaplace)\n",
+                "Datos: F.J. Anscombe en «Graphs in Statistical Analysis», ",
+                "Amer. Statis. 27, 1973")) 
+fig4
+
+# Exportamos
+ruta <- here("plots", "#matesendomingo",
+             "2021_06_17_CUARTETO_ANSCOMBE", "fig4")
+ggsave(glue("{ruta}.pdf"),
+       width = 13, height = 8, device = cairo_pdf)
+pdftools::pdf_convert(glue("{ruta}.pdf"), filenames = glue("{ruta}.png"),
+                      format = "png", dpi = 300)
+```
+
+```{r fig5, fig.width = 13, fig.height = 8}
+# Variable Y con puntos + densidad
+fig5 <- ggplot(datos_anscombe,
+                 aes(x = y, y = as.numeric(par) - 0.25,
+                     color = par)) + # datos
+  geom_boxplot(size = 1.2, outlier.alpha = 0.5) + # Boxplots sin nada más
+  geom_point(size = 9, alpha = 0.25) +  # puntos
+  # Densidad
+  stat_halfeye(aes(y = as.numeric(par), color = par,
+                   fill = after_scale(adjust_transparency(lighten(color, .6),
+                                                          alpha = 0.5))),
+               shape = 18, point_size = 3, interval_size = 1.8,
+               adjust = .5, .width = c(0, 1)) +
+  scale_color_tableau() + # Escala de colores de tableu
+  labs(x = "Variable Y", y = "Par del cuarteto", # Etiquetas de los ejes
+       title = "CUARTETO DE ANSCOMBE: gráfico de cajas y bigotes",
+       subtitle =
+         paste0("Gráfico: Javier Álvarez Liébana (@DadosDeLaplace)\n",
+                "Datos: F.J. Anscombe en «Graphs in Statistical Analysis», ",
+                "Amer. Statis. 27, 1973")) 
+fig5
+
+# Exportamos
+ruta <- here("plots", "#matesendomingo",
+             "2021_06_17_CUARTETO_ANSCOMBE", "fig5")
+ggsave(glue("{ruta}.pdf"),
+       width = 13, height = 8, device = cairo_pdf)
+pdftools::pdf_convert(glue("{ruta}.pdf"), filenames = glue("{ruta}.png"),
+                      format = "png", dpi = 300)
+```
+
+```{r fig6, fig.width = 13, fig.height = 8}
+# Par 1
+fig6 <- 
+  ggplot(datos_anscombe1, aes(x, y)) +
+  geom_errorbar(data = datos_anscombe1,
+    aes(x = mediana_x, ymin = mediana_y - sd_y,
+        ymax = mediana_y + sd_y, color = pal[1],
+        color = after_scale(darken(color, .2, space = "combined"))),
+    inherit.aes = F, width = .8, size = 2.5) +
+  geom_errorbar(data = datos_anscombe1,
+                aes(y = mediana_y, xmin = mediana_x - sd_x,
+                    xmax = mediana_x + sd_x, color = pal[1],
+                    color = after_scale(darken(color, .2,
+                                               space = "combined"))),
+                inherit.aes = F, width = .5, size = 2.5) +
+  geom_point(fill = pal[1], size = 11, shape = 21,
+             color = "transparent", alpha = .7) +
+  geom_smooth(method = lm, se = FALSE, linetype = "dashed",
+              color = "black", size = 2) +
+  annotate(geom = "text", x = 13.5, y = 10.3,
+           label =
+             paste0("Recta de regresión y = ",
+                    round(lm(datos_anscombe1$y ~
+                               datos_anscombe1$x)$coefficients[1], 1),
+                    " + ",
+                    round(lm(datos_anscombe1$y ~
+                               datos_anscombe1$x)$coefficients[2], 1),
+                    " * x (R2 = ",
+                    round(summary(lm(datos_anscombe1$y ~
+                                       datos_anscombe1$x))$r.squared, 3),
+                    ")"),
+           hjust = "right", family = "lobstertwo", 
+           size = 9, color = "black") +
+  scale_color_tableau() + scale_fill_tableau() + # Escala de colores de tableu
+  coord_cartesian(clip = "off") +
+  scale_x_continuous(limits = c(0, 16), breaks = seq(0, 15, by = 2),
+                     expand = c(0, 0)) +
+  scale_y_continuous(limits = c(4, 12), breaks = seq(4, 12, by = 2),
+                     expand = c(0, 0)) +
+  # Etiquetas de los ejes
+  labs(x = "Variable X", y = "Variable Y") +
+  theme(legend.position = "none") # sin leyenda
+fig6
+
+# Exportamos
+ruta <- here("plots", "#matesendomingo",
+             "2021_06_17_CUARTETO_ANSCOMBE", "fig6")
+ggsave(glue("{ruta}.pdf"),
+       width = 13, height = 8, device = cairo_pdf)
+pdftools::pdf_convert(glue("{ruta}.pdf"), filenames = glue("{ruta}.png"),
+                      format = "png", dpi = 300)
+```
+
+```{r fig7, fig.width = 13, fig.height = 8}
+# Par 2
+fig7 <- 
+  ggplot(datos_anscombe2, aes(x, y)) +
+  geom_errorbar(data = datos_anscombe2,
+                aes(x = mediana_x, ymin = mediana_y - sd_y,
+                    ymax = mediana_y + sd_y), color = pal[2],
+                inherit.aes = F, width = .8, size = 2.5) +
+  geom_errorbar(data = datos_anscombe2,
+                aes(y = mediana_y, xmin = mediana_x - sd_x,
+                    xmax = mediana_x + sd_x), color = pal[2],
+                inherit.aes = F, width = .5, size = 2.5) +
+  geom_point(fill = pal[2], size = 11, shape = 21, 
+             color = "transparent", alpha = .7) +
+  geom_smooth(method = lm, se = FALSE, linetype = "dashed",
+              color = "black", size = 2) +
+  annotate(geom = "text", x = 6.5, y = 10.5,
+           label =
+             paste0("Recta de regresión y = ",
+                    round(lm(datos_anscombe2$y ~
+                               datos_anscombe2$x)$coefficients[1], 1),
+                    " + ",
+                    round(lm(datos_anscombe2$y ~
+                               datos_anscombe2$x)$coefficients[2], 1),
+                    " * x (R2 = ",
+                    round(summary(lm(datos_anscombe2$y ~
+                                       datos_anscombe2$x))$r.squared, 3),
+                    ")"),
+           hjust = "left", family = "lobstertwo", size = 9,
+           color = "black") +
+  coord_cartesian(clip = "off") +
+  scale_x_continuous(limits = c(2, 20), breaks = seq(2, 20, by = 2),
+                     expand = c(0, 0)) +
+  scale_y_continuous(limits = c(4, 14), breaks = seq(4, 14, by = 2),
+                     expand = c(0, 0)) +
+  # Etiquetas de los ejes
+  labs(x = "Variable X", y = "Variable Y") +
+  theme(legend.position = "none") # sin leyenda
+fig7
+
+# Exportamos
+ruta <- here("plots", "#matesendomingo",
+             "2021_06_17_CUARTETO_ANSCOMBE", "fig7")
+ggsave(glue("{ruta}.pdf"),
+       width = 13, height = 8, device = cairo_pdf)
+pdftools::pdf_convert(glue("{ruta}.pdf"), filenames = glue("{ruta}.png"),
+                      format = "png", dpi = 300)
+```
+
+```{r fig8, fig.width = 13, fig.height = 8}
+# Par 3
+fig8 <- 
+  ggplot(datos_anscombe3, aes(x, y)) +
+  geom_errorbar(data = datos_anscombe3,
+                aes(x = mediana_x, ymin = mediana_y - sd_y,
+                    ymax = mediana_y + sd_y), color = pal[3],
+                inherit.aes = F, width = .8, size = 2.5) +
+  geom_errorbar(data = datos_anscombe3,
+                aes(y = mediana_y, xmin = mediana_x - sd_x,
+                    xmax = mediana_x + sd_x), color = pal[3],
+                inherit.aes = F, width = .5, size = 2.5) +
+  geom_point(size = 9, shape = 21, fill = pal[3],
+             color = "transparent", alpha = .7) +
+  geom_smooth(method = lm, se = FALSE, linetype = "dashed",
+              color = "black") +
+  annotate(geom = "text", x = 16.5, y = 11,
+           label =
+             paste0("Recta de regresión y = ",
+                    round(lm(datos_anscombe3$y ~
+                               datos_anscombe3$x)$coefficients[1], 1),
+                    " + ",
+                    round(lm(datos_anscombe3$y ~
+                               datos_anscombe3$x)$coefficients[2], 1),
+                    " * x (R2 = ",
+                    round(summary(lm(datos_anscombe3$y ~
+                                       datos_anscombe3$x))$r.squared, 3),
+                    ")"),
+           hjust = "right", family = "lobstertwo", size = 9,
+           color = "black") +
+  coord_cartesian(clip = "off") +
+  scale_x_continuous(limits = c(2, 20), breaks = seq(2, 20, by = 2),
+                     expand = c(0, 0)) +
+  scale_y_continuous(limits = c(4, 14), breaks = seq(4, 14, by = 2),
+                     expand = c(0, 0)) +
+  # Etiquetas de los ejes
+  labs(x = "Variable X", y = "Variable Y") +
+  theme(legend.position = "none") # sin leyenda
+fig8
+
+# Exportamos
+ruta <- here("plots", "#matesendomingo",
+             "2021_06_17_CUARTETO_ANSCOMBE", "fig8")
+ggsave(glue("{ruta}.pdf"),
+       width = 13, height = 8, device = cairo_pdf)
+pdftools::pdf_convert(glue("{ruta}.pdf"), filenames = glue("{ruta}.png"),
+                      format = "png", dpi = 300)
+```
+
+```{r fig9, fig.width = 13, fig.height = 8}
+# Par 4
+fig9 <- 
+  ggplot(datos_anscombe4, aes(x, y)) +
+  geom_errorbar(data = datos_anscombe4,
+                aes(x = mediana_x, ymin = mediana_y - sd_y,
+                    ymax = mediana_y + sd_y), color = pal[4],
+                inherit.aes = F, width = .8, size = 2.5) +
+  geom_errorbar(data = datos_anscombe4,
+                aes(y = mediana_y, xmin = mediana_x - sd_x,
+                    xmax = mediana_x + sd_x), color = pal[4],
+                inherit.aes = F, width = .5, size = 2.5) +
+  geom_point(size = 9, shape = 21, fill = pal[4],
+             color = "transparent", alpha = .7) +
+  geom_smooth(method = lm, se = FALSE, linetype = "dashed",
+              color = "black", size = 2) +
+  annotate(geom = "text", x = 16.5, y = 12.5,
+           label =
+             paste0("Recta de regresión y = ",
+                    round(lm(datos_anscombe4$y ~
+                               datos_anscombe4$x)$coefficients[1], 1),
+                    " + ",
+                    round(lm(datos_anscombe4$y ~
+                               datos_anscombe4$x)$coefficients[2], 1),
+                    " * x (R2 = ",
+                    round(summary(lm(datos_anscombe4$y ~
+                                       datos_anscombe4$x))$r.squared, 3),
+                    ")"),
+           hjust = "right", family = "lobstertwo",
+           size = 9, color = "black") +
+  coord_cartesian(clip = "off") +
+  scale_x_continuous(limits = c(2, 20), breaks = seq(2, 20, by = 2),
+                     expand = c(0, 0)) +
+  scale_y_continuous(limits = c(4, 14), breaks = seq(4, 14, by = 2),
+                     expand = c(0, 0)) +
+  # Etiquetas de los ejes
+  labs(x = "Variable X", y = "Variable Y") +
+  theme(legend.position = "none") # sin leyenda
+fig9
+
+# Exportamos
+ruta <- here("plots", "#matesendomingo",
+             "2021_06_17_CUARTETO_ANSCOMBE", "fig9")
+ggsave(glue("{ruta}.pdf"),
+       width = 13, height = 8, device = cairo_pdf)
+pdftools::pdf_convert(glue("{ruta}.pdf"), filenames = glue("{ruta}.png"),
+                      format = "png", dpi = 300)
+``` 
+
+```{r fig10, fig.width = 13, fig.height = 8}
+# las 4 juntas
+
+# Par 1
+fig6 <- 
+  ggplot(datos_anscombe1, aes(x, y)) +
+  geom_errorbar(data = datos_anscombe1,
+    aes(x = mediana_x, ymin = mediana_y - sd_y,
+        ymax = mediana_y + sd_y, color = pal[1],
+        color = after_scale(darken(color, .2, space = "combined"))),
+    inherit.aes = F, width = .8, size = 2.5) +
+  geom_errorbar(data = datos_anscombe1,
+                aes(y = mediana_y, xmin = mediana_x - sd_x,
+                    xmax = mediana_x + sd_x, color = pal[1],
+                    color = after_scale(darken(color, .2,
+                                               space = "combined"))),
+                inherit.aes = F, width = .5, size = 2.5) +
+  geom_point(fill = pal[1], size = 11, shape = 21,
+             color = "transparent", alpha = .7) +
+  geom_smooth(method = lm, se = FALSE, linetype = "dashed",
+              color = "black", size = 2) +
+  annotate(geom = "text", x = 13.5, y = 10.3,
+           label =
+             paste0("Recta de regresión y = ",
+                    round(lm(datos_anscombe1$y ~
+                               datos_anscombe1$x)$coefficients[1], 1),
+                    " + ",
+                    round(lm(datos_anscombe1$y ~
+                               datos_anscombe1$x)$coefficients[2], 1),
+                    " * x (R2 = ",
+                    round(summary(lm(datos_anscombe1$y ~
+                                       datos_anscombe1$x))$r.squared, 3),
+                    ")"),
+           hjust = "right", family = "lobstertwo", 
+           size = 5, color = "black") +
+  scale_color_tableau() + scale_fill_tableau() + # Escala de colores de tableu
+  coord_cartesian(clip = "off") +
+  scale_x_continuous(limits = c(0, 16), breaks = seq(0, 15, by = 2),
+                     expand = c(0, 0)) +
+  scale_y_continuous(limits = c(4, 12), breaks = seq(4, 12, by = 2),
+                     expand = c(0, 0)) +
+  # Etiquetas de los ejes
+  labs(x = "Variable X", y = "Variable Y") +
+  theme(legend.position = "none") # sin leyenda
+
+# Par 2
+fig7 <- 
+  ggplot(datos_anscombe2, aes(x, y)) +
+  geom_errorbar(data = datos_anscombe2,
+                aes(x = mediana_x, ymin = mediana_y - sd_y,
+                    ymax = mediana_y + sd_y), color = pal[2],
+                inherit.aes = F, width = .8, size = 2.5) +
+  geom_errorbar(data = datos_anscombe2,
+                aes(y = mediana_y, xmin = mediana_x - sd_x,
+                    xmax = mediana_x + sd_x), color = pal[2],
+                inherit.aes = F, width = .5, size = 2.5) +
+  geom_point(fill = pal[2], size = 11, shape = 21, 
+             color = "transparent", alpha = .7) +
+  geom_smooth(method = lm, se = FALSE, linetype = "dashed",
+              color = "black", size = 2) +
+  annotate(geom = "text", x = 6.5, y = 11,
+           label =
+             paste0("Recta de regresión y = ",
+                    round(lm(datos_anscombe2$y ~
+                               datos_anscombe2$x)$coefficients[1], 1),
+                    " + ",
+                    round(lm(datos_anscombe2$y ~
+                               datos_anscombe2$x)$coefficients[2], 1),
+                    " * x (R2 = ",
+                    round(summary(lm(datos_anscombe2$y ~
+                                       datos_anscombe2$x))$r.squared, 3),
+                    ")"),
+           hjust = "left", family = "lobstertwo", size = 5,
+           color = "black") +
+  coord_cartesian(clip = "off") +
+  scale_x_continuous(limits = c(2, 20), breaks = seq(2, 20, by = 2),
+                     expand = c(0, 0)) +
+  scale_y_continuous(limits = c(4, 14), breaks = seq(4, 14, by = 2),
+                     expand = c(0, 0)) +
+  # Etiquetas de los ejes
+  labs(x = "Variable X", y = "Variable Y") +
+  theme(legend.position = "none") # sin leyenda
+
+# Par 3
+fig8 <- 
+  ggplot(datos_anscombe3, aes(x, y)) +
+  geom_errorbar(data = datos_anscombe3,
+                aes(x = mediana_x, ymin = mediana_y - sd_y,
+                    ymax = mediana_y + sd_y), color = pal[3],
+                inherit.aes = F, width = .8, size = 2.5) +
+  geom_errorbar(data = datos_anscombe3,
+                aes(y = mediana_y, xmin = mediana_x - sd_x,
+                    xmax = mediana_x + sd_x), color = pal[3],
+                inherit.aes = F, width = .5, size = 2.5) +
+  geom_point(size = 9, shape = 21, fill = pal[3],
+             color = "transparent", alpha = .7) +
+  geom_smooth(method = lm, se = FALSE, linetype = "dashed",
+              color = "black") +
+  annotate(geom = "text", x = 16.5, y = 11,
+           label =
+             paste0("Recta de regresión y = ",
+                    round(lm(datos_anscombe3$y ~
+                               datos_anscombe3$x)$coefficients[1], 1),
+                    " + ",
+                    round(lm(datos_anscombe3$y ~
+                               datos_anscombe3$x)$coefficients[2], 1),
+                    " * x (R2 = ",
+                    round(summary(lm(datos_anscombe3$y ~
+                                       datos_anscombe3$x))$r.squared, 3),
+                    ")"),
+           hjust = "right", family = "lobstertwo", size = 5,
+           color = "black") +
+  coord_cartesian(clip = "off") +
+  scale_x_continuous(limits = c(2, 20), breaks = seq(2, 20, by = 2),
+                     expand = c(0, 0)) +
+  scale_y_continuous(limits = c(4, 14), breaks = seq(4, 14, by = 2),
+                     expand = c(0, 0)) +
+  # Etiquetas de los ejes
+  labs(x = "Variable X", y = "Variable Y") +
+  theme(legend.position = "none") # sin leyenda
+
+# Par 4
+fig9 <- 
+  ggplot(datos_anscombe4, aes(x, y)) +
+  geom_errorbar(data = datos_anscombe4,
+                aes(x = mediana_x, ymin = mediana_y - sd_y,
+                    ymax = mediana_y + sd_y), color = pal[4],
+                inherit.aes = F, width = .8, size = 2.5) +
+  geom_errorbar(data = datos_anscombe4,
+                aes(y = mediana_y, xmin = mediana_x - sd_x,
+                    xmax = mediana_x + sd_x), color = pal[4],
+                inherit.aes = F, width = .5, size = 2.5) +
+  geom_point(size = 9, shape = 21, fill = pal[4],
+             color = "transparent", alpha = .7) +
+  geom_smooth(method = lm, se = FALSE, linetype = "dashed",
+              color = "black", size = 2) +
+  annotate(geom = "text", x = 16.5, y = 12.5,
+           label =
+             paste0("Recta de regresión y = ",
+                    round(lm(datos_anscombe4$y ~
+                               datos_anscombe4$x)$coefficients[1], 1),
+                    " + ",
+                    round(lm(datos_anscombe4$y ~
+                               datos_anscombe4$x)$coefficients[2], 1),
+                    " * x (R2 = ",
+                    round(summary(lm(datos_anscombe4$y ~
+                                       datos_anscombe4$x))$r.squared, 3),
+                    ")"),
+           hjust = "right", family = "lobstertwo",
+           size = 5, color = "black") +
+  coord_cartesian(clip = "off") +
+  scale_x_continuous(limits = c(2, 20), breaks = seq(2, 20, by = 2),
+                     expand = c(0, 0)) +
+  scale_y_continuous(limits = c(4, 14), breaks = seq(4, 14, by = 2),
+                     expand = c(0, 0)) +
+  # Etiquetas de los ejes
+  labs(x = "Variable X", y = "Variable Y") +
+  theme(legend.position = "none") # sin leyenda
+
+# Juntas con las funcionalidades del paquete patchwork
+fig6 + fig7 + fig8 + fig9 + plot_layout(guides = "collect") +
+  plot_annotation(title = "CUARTETO DE ANSCOMBE",
+       subtitle =
+         paste0("Gráfico: Javier Álvarez Liébana (@DadosDeLaplace)\n",
+                "Datos: F.J. Anscombe en «Graphs in Statistical Analysis», ",
+                "Amer. Statis. 27, 1973"))
+  
+# Exportamos
+ruta <- here("plots", "#matesendomingo",
+             "2021_06_17_CUARTETO_ANSCOMBE", "fig10")
+ggsave(glue("{ruta}.pdf"),
+       width = 13, height = 8, device = cairo_pdf)
+pdftools::pdf_convert(glue("{ruta}.pdf"), filenames = glue("{ruta}.png"),
+                      format = "png", dpi = 300)
+``` 
+
+```{r fig11, fig.width = 13, fig.height = 8}
+# Datasaurus dozen (gif)
+
+# Creamos las anotaciones por figura
+anotaciones <- datasaurus_dozen %>% group_by(dataset) %>%
+  summarize(MEDIA_X = mean(x), MEDIA_Y = mean(y),
+            VARIANZA_X = var(x), VARIANZA_Y = var(y),
+            CORRELACION_XY = cor(x, y))
+fig11 <-
+  ggplot(datasaurus_dozen,
+         # Color en función del conjunto
+         aes(x = x, y = y, color = as.numeric(as.factor(dataset)))) +
+  geom_point(size = 9, alpha = 0.5, show.legend = FALSE) +
+  # Escala de colores en gradiente
+  scale_color_gradient2_tableau("Red-Blue Diverging") +
+  # Transiciones y fade-in/fade-out
+  transition_states(dataset, 3, 1) + enter_fade() + exit_fade() +
+  ggtitle("THE DATASAURUS DOZEN\n") +
+  labs(subtitle =
+         paste0("Gráficos: J. Álvarez Liébana | ",
+                "Datos: Alberto Cairo")) +
+  geom_text(data = anotaciones,
+            aes(x = 50, y = Inf,
+                label = paste0("Media x = ", round(MEDIA_X, 1),
+                               ", Media y = ", round(MEDIA_Y, 1),
+                               "\nDesv. típica x = ",
+                               round(sqrt(VARIANZA_X), 1),
+                               ", Desv. típica y = ",
+                               round(sqrt(VARIANZA_Y), 1),
+                               "\nCorrelación (X, Y) = ",
+                               round(CORRELACION_XY, 1)),
+                color = as.numeric(as.factor(dataset))),
+            vjust = -1.45, hjust = 0, size = 5) +
+  coord_cartesian(clip = "off") +
+  theme(legend.position = "none")  # sin leyenda
+fig11
+
+# Exportamos
+ruta <- here("plots", "#matesendomingo",
+             "2021_06_17_CUARTETO_ANSCOMBE", "gif_anscombe")
+anim_save(glue("{ruta}.gif"), fig11)
+```
