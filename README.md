@@ -38,11 +38,11 @@ Javier Álvarez Liébana (@DadosDeLaplace)
   
 <!-- toc -->
 * **#MatesEnDomingo 2021**
-  - 27/07/2021 [🗳⛑ Sorteo de Vietnam de 1969 / Draft Lottery of 1969](https://github.com/)
-  - 06/06/2021 [🎲👻 La historia de la campana de Gauss / The history of Gaussian distribution](https://github.com/)
+  - 27/06/2021 [🗳⛑ Sorteo de Vietnam de 1969 / Draft Lottery (Vietnam) of 1969](https://github.com/dadosdelaplace/hilostwitter/tree/main/plots/%23matesendomingo/2021_07_27_DRAFT_LOTTERY_VIETNAM)
+  - 06/06/2021 [🎲👻 La historia de la campana de Gauss / The history of Gaussian distribution](.)
 * **#MatesEnDomingo 2020**
   - 11/10/2020 [📊🗳 Ley de Benford / Benford's Law](https://github.com/)️
-  - 06/09/2020 [🚕⛑ Contar taxis y el desembardo de Normandia / Counting on taxis and the Battle of Normandy](https://github.com/)️
+  - 06/09/2020 [🚕⛑ Contar taxis y el desembardo de Normandia / Counting on taxis and the Battle of Normandy](.)️
 
 <!-- tocstop -->
   
@@ -66,5 +66,31 @@ Javier Álvarez Liébana (@DadosDeLaplace)
   - 22/06/2021 [👨🏻‍🏫📚 Probabilidad de aprobar las oposiciones / Probability of passing competition exams](...)️
 <!-- tocstop -->
 </details>
+
+***
+
+###  [27/06/2021 🗳⛑ Sorteo de Vietnam de 1969 / Draft Lottery (Vietnam) of 1969](https://github.com/dadosdelaplace/hilostwitter/tree/main/plots/%23matesendomingo/2021_07_27_DRAFT_LOTTERY_VIETNAM)
+
+[🧶 HILO EN TWITTER / TWITTER THREAD](https://twitter.com/DadosdeLaplace/status/1409178160860733443)
+
+![](https://github.com/dadosdelaplace/hilostwitter/blob/main/plots/%23matesendomingo/2021_07_27_DRAFT_LOTTERY_VIETNAM/fig3.png)
+*Gráfico de puntos (scatter) + línea horizontal + líneas verticales (para visualizar mejor la desproporción por mes): meses en el eje x, número de la papeleta asociada a cada día del mes en el eje y*
+
+![](https://github.com/dadosdelaplace/hilostwitter/blob/main/plots/%23matesendomingo/2021_07_27_DRAFT_LOTTERY_VIETNAM/fig4.png)
+*Calendario con los días reclutados marcados en rojo: los nacidos en esos días fueron llamados al frente*
+
+![dsdasda](https://github.com/dadosdelaplace/hilostwitter/blob/main/plots/%23matesendomingo/2021_07_27_DRAFT_LOTTERY_VIETNAM/fig5.png)
+*Gráfico de barras horizontales del número de días reclutados por mes*
+
+![](https://github.com/dadosdelaplace/hilostwitter/blob/main/plots/%23matesendomingo/2021_07_27_DRAFT_LOTTERY_VIETNAM/fig9.png)
+*Regresión mes vs número medio de papeleta por mes*
+
+![](https://github.com/dadosdelaplace/hilostwitter/blob/main/plots/%23matesendomingo/2021_07_27_DRAFT_LOTTERY_VIETNAM/fig10.png)
+*Distribución mensual de las papeletas*
+
+![](https://github.com/dadosdelaplace/hilostwitter/blob/main/plots/%23matesendomingo/2021_07_27_DRAFT_LOTTERY_VIETNAM/fig11.png)
+*Gráfico de cajas y bigotes + densidad + simulación Monte Carlo: simulamos 1000 draft distintos y guardamos como quedarían las papeletas a lo largo de los meses para ver lo extremo del resultado real*
+
+***
 
 
