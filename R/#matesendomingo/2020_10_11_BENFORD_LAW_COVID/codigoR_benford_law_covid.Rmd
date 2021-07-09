@@ -1,0 +1,663 @@
+---
+title: "Benford's Law (COVID)"
+author: "Javier Álvarez Liébana"
+date: "11th of October 2020"
+output:
+  html_document:
+    theme: paper
+    highlight: kate
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r ajustes, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, fig.showtext = T, fig.retina = 1)
+```
+
+```{r preparacion, message = FALSE}
+rm(list = ls()) # borramos entorno
+# setwd(dirname(rstudioapi::getSourceEditorContext()$path)) # fijamos directorio
+# Instalamos paquetes necesarios
+repos <- "http://cran.us.r-project.org"
+if(!require(ggplot2)) install.packages("ggplot2", repos = repos)
+if(!require(latex2exp)) install.packages("latex2exp", repos = repos)
+if(!require(tidyverse)) install.packages("tidyverse", repos = repos)
+if(!require(lubridate)) install.packages("lubridate", repos = repos)
+if(!require(ggthemes)) install.packages("ggthemes", repos = repos)
+if(!require(patchwork)) install.packages("patchwork", repos = repos)
+if(!require(colorspace)) install.packages("colorspace", repos = repos)
+if(!require(calendR)) install.packages("calendR", repos = repos)
+if(!require(patchwork)) install.packages("patchwork", repos = repos)
+if(!require(here)) install.packages("here", repos = repos)
+if(!require(glue)) install.packages("glue", repos = repos)
+if(!require(pdftools)) install.packages("pdftools", repos = repos)
+```
+
+```{r carga-datos, message = FALSE}
+# Cargamos datos del Draft Lottery del 69
+# Fuente original: https://www.randomservices.org/random/data/Draft.html
+datos_draft <-
+read_csv(file =
+           paste0("https://raw.githubusercontent.com/",
+                  "dadosdelaplace/hilostwitter/main/R/%23matesendomingo/",
+                  "2021_07_27_DRAFT_LOTTERY_VIETNAM/draft_data.csv"))
+
+# Filtramos solo el draft del 1 de diciembre de 1969
+draft_69 <-
+  tibble("meses" = month(datos_draft$M, label = TRUE),
+         "dias" = datos_draft$D,
+         "dias_anual" = 1:length(datos_draft$D), # Nº del día del año
+         "papeletas" = datos_draft$N69)
+```
+
+```{r preproc-datos, message = FALSE}
+# Calculamos papeletas «reclutadas» (195 o inferior el número
+# de papeleta) en cada uno de los meses del año
+draft_69_stats <- draft_69 %>% filter(papeletas <= 195) %>% count(meses)
+names(draft_69_stats) <- c("meses", "n_papeletas")
+
+# Calculamos el % de días «reclutados» en cada uno de los meses del año
+draft_69_stats <- draft_69_stats %>%
+  mutate(porc_dias_papeletas =
+           n_papeletas / c(31, 29, 31, 30, 31, 30, 31,
+                           31, 30, 31, 30, 31))
+
+# Calculamos el número medio de papeleta para cada mes
+draft_69_stats$media_papeletas <-
+  draft_69 %>% group_by(meses) %>%
+  summarize(media_papeletas = mean(papeletas)) %>% pull(media_papeletas)
+
+# Calculamos parámetros esperados y desviaciones respecto a los mismos
+draft_69_stats <-
+  draft_69_stats %>%
+  mutate(media_esp = mean(media_papeletas),
+         porc_dias_esp = mean(porc_dias_papeletas),
+         desv_papeletas = media_papeletas - media_esp,
+         desv_abs_papeletas = abs(desv_papeletas),
+         desv_sq_papeletas = desv_abs_papeletas^2)
+```
+
+```{r tema-base-fuentes-plots}
+# Fuentes para los gráficos
+library(showtext)
+font_add_google("Lobster Two", "lobstertwo")
+font_add_google("Poppins", "poppins")
+showtext_auto()
+
+# Tema base
+theme_set(theme_bw())
+theme_update(
+  # Fuentes y ajustes de la leyenda
+  legend.text = element_text(size = 11, family = "poppins"),
+  legend.title = element_text(face = "bold", size = 13,
+                              family = "poppins"),
+  # Fuentes de los textos
+  text = element_text(family = "poppins", size = 11, color = "black"),
+  # Fuentes y ajustes de título, subtítulo y caption
+  plot.title = element_text(family = "poppins", size = 23,
+                            face = "bold", color = "#2a475e"),
+  plot.subtitle = element_text(family = "poppins", size = 11,
+                               face = "bold", color = "black"),
+  plot.caption = element_text(size = 11, family = "poppins"),
+  # Fuentes y ajustes de los ejes
+  axis.text = element_text(size = 11, color = "grey50",
+                           family = "poppins"),
+  axis.title = element_text(size = 15, family = "poppins"),
+  axis.ticks = element_blank(), axis.line = element_line(colour = "grey50"),
+  # Ajustes del grid
+  rect = element_blank(), panel.grid = element_line(color = "#b4aea9"),
+  panel.grid.minor = element_blank(),
+  panel.grid.major.x = element_blank(),
+  panel.grid.major.y = element_line(linetype = "dashed"),
+  plot.background =
+    element_rect(fill = "#fbf9f4", color = "#fbf9f4"),
+  # Márgenes
+  plot.margin = # márgenes
+    margin(t = 0.5, b = 0.5, r = 0.9, l = 0.9, "cm"))
+```
+
+```{r fig1, fig.width = 13, fig.height = 8}
+# 1. Scatter plot (puntos)
+fig1 <- ggplot(draft_69, aes(x = dias_anual, y = papeletas)) +
+  # Puntos (color asociado a los meses)
+  geom_point(aes(color = meses), size = 4, alpha = 0.8) +
+  scale_color_stata() + # Escala de colores (necesitamos 12)
+  # Máximo 10 cortes en el eje y
+  scale_y_continuous(breaks = scales::pretty_breaks(n = 10)) +
+  labs(title = "DRAFT LOTTERY PARA LA GUERRA DE VIETNAM (1969)",
+       subtitle =
+         paste0("Gráfico: Javier Álvarez Liébana (@DadosDeLaplace) | ",
+                "Datos: Draft lottery (1969)"),
+       x = "Días del año de nacimiento", y = "Número de la papeleta") +
+  # Separación con leyenda
+  theme(legend.box.spacing = unit(0.7, "cm"))
+fig1
+
+# Exportamos
+ruta <- here("plots", "#matesendomingo",
+             "2021_07_27_DRAFT_LOTTERY_VIETNAM", "fig1")
+ggsave(glue("{ruta}.pdf"),
+       width = 13, height = 8, device = cairo_pdf)
+pdf_convert(glue("{ruta}.pdf"), filenames = glue("{ruta}.png"),
+            format = "png", dpi = 300)
+
+```
+
+```{r fig2, fig.width = 13, fig.height = 8}
+# 2. Scatter plot + umbral 195 + anotaciones
+fig2 <- ggplot(draft_69, aes(x = dias_anual, y = papeletas)) +
+  # Puntos (color asociado a los meses)
+  geom_point(aes(color = meses), size = 4, alpha = 0.8) +
+  # Línea horizontal discontinua para el umbral de 195
+  geom_hline(aes(yintercept = 195), linetype = "dashed", size = 1.3) +
+  # Anotaciones
+  annotate(geom = "curve", x = 370, y = 185, xend = 370, yend = 125, 
+           color = "#be2e2e", curvature = 0, size = 1.5,
+           arrow = arrow(length = unit(3.5, "mm"))) +
+  annotate(geom = "text", x = 375, y = 145,
+           label = paste0("Personas con papeletas\n",
+                          "menores (o iguales) a 195\n",
+                          "debían ir a la guerra"),
+           color = "#be2e2e", hjust = "left", family = "lobstertwo") +
+  annotate(geom = "curve", x = 370, y = 205, xend = 370, yend = 265, 
+           color = "#2a475e", curvature = 0, size = 1.5,
+           arrow = arrow(length = unit(3.5, "mm"))) +
+  annotate(geom = "text", x = 375, y = 235,
+           label = paste0("Personas con papeletas\n",
+                          "mayores de 195 libraban\n",
+                          "de ir a la guerra"),
+           color = "#2a475e", hjust = "left", family = "lobstertwo") +
+  coord_cartesian(clip = "off") +
+  scale_color_stata() + # Escala de colores (necesitamos 12)
+  # Máximo 10 cortes en el eje y
+  scale_y_continuous(breaks = scales::pretty_breaks(n = 10)) +
+  labs(title = "DRAFT LOTTERY PARA LA GUERRA DE VIETNAM (1969)",
+       subtitle =
+         paste0("Gráfico: Javier Álvarez Liébana (@DadosDeLaplace) | ",
+                "Datos: Draft lottery (1969)"),
+       x = "Días del año de nacimiento", y = "Número de la papeleta") +
+  theme(legend.box.spacing =  unit(2.7, "cm"))
+fig2
+
+# Exportamos
+ruta <- here("plots", "#matesendomingo",
+             "2021_07_27_DRAFT_LOTTERY_VIETNAM", "fig2")
+ggsave(glue("{ruta}.pdf"),
+       width = 13, height = 8, device = cairo_pdf)
+pdftools::pdf_convert(glue("{ruta}.pdf"), filenames = glue("{ruta}.png"),
+                      format = "png", dpi = 300)
+```
+
+```{r fig3, fig.width = 13, fig.height = 8}
+# Scatter plot + umbral 195 + anotaciones + líneas verticales
+fig3 <- ggplot(draft_69, aes(x = dias_anual, y = papeletas)) +
+  # Puntos (color asociado a los meses)
+  geom_point(aes(color = meses), size = 4, alpha = 0.8) +
+  geom_hline(aes(yintercept = 195), linetype = "dashed", size = 1.3) +
+  # Anotaciones
+  annotate(geom = "curve", x = 370, y = 185, xend = 370, yend = 125, 
+           color = "#be2e2e", curvature = 0, size = 1.5,
+           arrow = arrow(length = unit(3.5, "mm"))) +
+  annotate(geom = "text", x = 375, y = 145,
+           label = paste0("Personas con papeletas\n",
+                          "menores (o iguales) a 195\n",
+                          "debían ir a la guerra"),
+           color = "#be2e2e", hjust = "left", family = "lobstertwo") +
+  annotate(geom = "curve", x = 370, y = 205, xend = 370, yend = 265, 
+           color = "#2a475e", curvature = 0, size = 1.5,
+           arrow = arrow(length = unit(3.5, "mm"))) +
+  annotate(geom = "text", x = 375, y = 235,
+           label = paste0("Personas con papeletas\n",
+                          "mayores de 195 libraban\n",
+                          "de ir a la guerra"),
+           color = "#2a475e", hjust = "left", family = "lobstertwo") +
+  coord_cartesian(clip = "off") +
+  scale_color_stata() + # Escala de colores (necesitamos 12)
+  # Líneas verticales
+  geom_vline(aes(xintercept = 31), linetype = "dashed", size = 0.5,
+             color = "#2a475e", alpha = 0.7) +
+  geom_vline(aes(xintercept = (31 + 29)), linetype = "dashed",
+             size = 0.5, color = "#2a475e", alpha = 0.7) +
+  geom_vline(aes(xintercept = (31 + 29 + 31)), linetype = "dashed",
+             size = 0.5, color = "#2a475e", alpha = 0.7)  +
+  geom_vline(aes(xintercept = (31 + 29 + 31 + 30)), linetype = "dashed",
+             size = 0.5, color = "#2a475e", alpha = 0.7) +
+  geom_vline(aes(xintercept = (31 + 29 + 31 + 30 + 31)),
+             linetype = "dashed", size = 0.5,
+             color = "#2a475e", alpha = 0.7) +
+  geom_vline(aes(xintercept = (31 + 29 + 31 + 30 + 31 + 30)),
+             linetype = "dashed", size = 0.5,
+             color = "#2a475e", alpha = 0.7) +
+  geom_vline(aes(xintercept = (31 + 29 + 31 + 30 + 31 + 30 + 31)),
+             linetype = "dashed", size = 0.5,
+             color = "#2a475e", alpha = 0.7) +
+  geom_vline(aes(xintercept = (31 + 29 + 31 + 30 + 31 + 30 + 31 + 31)),
+             linetype = "dashed", size = 0.5,
+             color = "#2a475e", alpha = 0.7) +
+  geom_vline(aes(xintercept = (31 + 29 + 31 + 30 + 31 + 30 + 31 + 31 + 30)),
+             linetype = "dashed", size = 0.5,
+             color = "#2a475e", alpha = 0.7) +
+  geom_vline(aes(xintercept = (31 + 29 + 31 + 30 + 31 + 30 + 31 +
+                                 31 + 30 + 31)),
+             linetype = "dashed", size = 0.5,
+             color = "#2a475e", alpha = 0.7) +
+  geom_vline(aes(xintercept = (31 + 29 + 31 + 30 + 31 + 30 + 31 +
+                                 31 + 30 + 31 + 30)),
+             linetype = "dashed", size = 0.5,
+             color = "#2a475e", alpha = 0.7) +
+  scale_y_continuous(breaks = scales::pretty_breaks(n = 10)) +
+  labs(title = "DRAFT LOTTERY PARA LA GUERRA DE VIETNAM (1969)",
+       subtitle =
+         paste0("Gráfico: Javier Álvarez Liébana (@DadosDeLaplace) | ",
+                "Datos: Draft lottery (1969)"),
+       x = "Días del año de nacimiento", y = "Número de la papeleta") +
+  theme(legend.box.spacing =  unit(2.7, "cm"))
+fig3
+
+# Exportamos
+ruta <- here("plots", "#matesendomingo",
+             "2021_07_27_DRAFT_LOTTERY_VIETNAM", "fig3")
+ggsave(glue("{ruta}.pdf"),
+       width = 13, height = 8, device = cairo_pdf)
+pdftools::pdf_convert(glue("{ruta}.pdf"), filenames = glue("{ruta}.png"),
+                      format = "png", dpi = 300)
+```
+
+```{r fig4, fig.width = 13, fig.height = 8}
+# Calendario relleno
+fig4 <-
+  calendR(year = 1968, # El año en sí da igual, elegimos uno con bisiestos
+          font.family = "poppins",
+          title = "DRAFT LOTTERY PARA LA GUERRA DE VIETNAM (1969)",
+          title.size = 21,
+          subtitle =
+            paste0("Gráfico: Javier Álvarez Liébana (@DadosDeLaplace) | ",
+                   "Datos: Draft lottery (1969)"),
+          subtitle.size = 11, subtitle.col = "black", bg.col = "#fbf9f4",
+          start = "M", title.col = "#2a475e", col = "grey50",
+          special.days = # Días destacados: los que papeleta < 195
+            draft_69$dias_anual[draft_69$papeletas < 195],
+          special.col = c("#E26E6E") # Color de los días destacados
+          ) 
+fig4
+
+# Exportamos
+ruta <- here("plots", "#matesendomingo",
+             "2021_07_27_DRAFT_LOTTERY_VIETNAM", "fig4")
+ggsave(glue("{ruta}.pdf"),
+       width = 13, height = 8, device = cairo_pdf)
+pdftools::pdf_convert(glue("{ruta}.pdf"), filenames = glue("{ruta}.png"),
+                      format = "png", dpi = 300)
+```
+
+```{r fig5, fig.width = 13, fig.height = 8}
+# 5. Barras horizontales con el nº días reclutados y sus % relativos
+fig5 <- ggplot(draft_69_stats, aes(fill = meses, color = meses)) +
+  # Columnas
+  geom_col(aes(x = n_papeletas, y = meses), alpha = 0.8) +
+  coord_cartesian(clip = "off") +
+  # Escalas de color tanto de la línea como del relleno
+  scale_color_stata() + scale_fill_stata() +
+  # Texto asociado a cada barra horizontal
+  geom_text(aes(x = n_papeletas + 2.3, y = as.numeric(meses) + 0.25,
+                label =
+                  paste0(n_papeletas, " días (",
+                         round(porc_dias_papeletas * 100, 1), "%)"),
+                color = meses),
+            family = "poppins", show.legend = FALSE) +
+  # Línea vertical con nº días esperado (% esperado * 30.5 días/mes media)
+  geom_vline(aes(xintercept = porc_dias_esp * 30.5),
+             linetype = "dashed", size = 0.7,
+             color = "#2a475e", alpha = 0.8) +
+  # Anotaciones
+  annotate(geom = "curve", x = 23, y = 4.3, xend = 16.5, yend = 3.1, 
+           color = "#2a475e", curvature = -0.4, size = 1.5,
+           arrow = arrow(length = unit(3.5, "mm"))) +
+  annotate(geom = "text", x = 21, y = 5.1,
+           label = paste0("En un mes medio (30 días), lo esperado\n",
+                          "eran 16-17 días por mes (53.3% de días)"),
+           color = "#2a475e", hjust = "left", family = "lobstertwo") +
+  labs(title = "DÍAS DE CADA MES SELECCIONADOS",
+       subtitle =
+         paste0("Gráfico: Javier Álvarez Liébana (@DadosDeLaplace) | ",
+                "Datos: Draft lottery (1969)"),
+       x = "Número de días «alistados» a la guerra", y = "Meses") +
+  theme(legend.box.spacing =  unit(2.7, "cm"))
+fig5
+
+# Exportamos
+ruta <- here("plots", "#matesendomingo",
+             "2021_07_27_DRAFT_LOTTERY_VIETNAM", "fig5")
+ggsave(glue("{ruta}.pdf"),
+       width = 13, height = 8, device = cairo_pdf)
+pdftools::pdf_convert(glue("{ruta}.pdf"), filenames = glue("{ruta}.png"),
+                      format = "png", dpi = 300)
+```
+
+```{r fig6, fig.width = 13, fig.height = 8}
+# 6. Barras verticales con la media de las papeletas por mes
+fig6 <- ggplot(draft_69_stats, aes(fill = meses, color = meses)) +
+  # Columnas
+  geom_col(aes(y = media_papeletas, x = meses), alpha = 0.8) +
+  coord_cartesian(clip = "off") +
+  # Escalas de color tanto de la línea como del relleno
+  scale_color_stata() + scale_fill_stata() +
+  # Textos
+  geom_text(aes(x = meses, y = media_papeletas + 10,
+                label = round(media_papeletas, 1),
+                color = meses),
+            family = "poppins", show.legend = FALSE) +
+  # Línea para la media de papeleta esperada
+  geom_hline(aes(yintercept = media_esp),
+             linetype = "dashed", size = 0.7,
+             color = "#2a475e", alpha = 0.8) +
+  # Anotaciones
+  annotate(geom = "curve", x = 9, y = 187, xend = 7.9, yend = 240, 
+           color = "#2a475e", curvature = 0.5, size = 1.5,
+           arrow = arrow(length = unit(3.5, "mm"))) +
+  annotate(geom = "text", x = 5.6, y = 237,
+           label = paste0("El nº medio de papeletas\n",
+                          "esperado sería de 183.5"),
+           color = "#2a475e", hjust = "left", family = "lobstertwo") +
+  labs(title = "MEDIA DEL NÚMERO DE PAPELETAS EN CADA MES",
+       subtitle =
+         paste0("Gráfico: Javier Álvarez Liébana (@DadosDeLaplace) | ",
+                "Datos: Draft lottery (1969)"),
+       x = "Meses", y = "Media del nº de papeleta") +
+  theme(legend.box.spacing =  unit(2.7, "cm"))
+fig6
+
+# Exportamos
+ruta <- here("plots", "#matesendomingo",
+             "2021_07_27_DRAFT_LOTTERY_VIETNAM", "fig6")
+ggsave(glue("{ruta}.pdf"),
+       width = 13, height = 8, device = cairo_pdf)
+pdftools::pdf_convert(glue("{ruta}.pdf"), filenames = glue("{ruta}.png"),
+                      format = "png", dpi = 300)
+```
+
+```{r fig7, fig.width = 13, fig.height = 8}
+# 7. Barras verticales de desviaciones entre el
+# número de papeleta medio y lo esperado
+fig7 <- ggplot(draft_69_stats, aes(fill = meses, color = meses)) +
+  geom_col(aes(y = desv_papeletas, x = meses),  alpha = 0.8) +
+  coord_cartesian(clip = "off") +
+  scale_color_stata() + scale_fill_stata() +
+  labs(title = "DESVIACIÓN DEL Nº PAPELETAS MEDIO VS LO ESPERADO ",
+       subtitle =
+         paste0("Gráfico: Javier Álvarez Liébana (@DadosDeLaplace) | ",
+                "Datos: Draft lottery (1969)"),
+       x = "Meses", y = "Desviación del sorteo vs lo esperado") +
+  theme(legend.box.spacing =  unit(2.7, "cm"))
+fig7
+
+# Exportamos
+ruta <- here("plots", "#matesendomingo",
+             "2021_07_27_DRAFT_LOTTERY_VIETNAM", "fig7")
+ggsave(glue("{ruta}.pdf"),
+       width = 13, height = 8, device = cairo_pdf)
+pdftools::pdf_convert(glue("{ruta}.pdf"), filenames = glue("{ruta}.png"),
+                      format = "png", dpi = 300)
+```
+
+```{r fig9, fig.width = 13, fig.height = 8}
+# 9. Regresión del mes vs número de papeleta medio
+reg <- lm(draft_69_stats$media_papeletas ~
+            as.numeric(draft_69_stats$meses))
+fig9 <- ggplot(draft_69_stats, aes(x = meses, y = media_papeletas,
+                                   color = meses)) +
+  geom_point(size = 8, alpha = 0.8) +
+  # Valores ajustados: pintamos recta de regresión
+  geom_line(data = draft_69_stats,
+            aes(x = as.numeric(meses),
+                y = lm(media_papeletas ~ as.numeric(meses))$fitted.values),
+            show.legend = FALSE, linetype = "dashed",
+            size = 1.3, color = "#2a475e") +
+  # Anotaciones
+  annotate(geom = "text", x = 2, y = 190,
+           label = paste0("Regresión: Y = ", round(reg$coefficients[1], 1),
+                          " ", round(reg$coefficients[2], 1), "*X"),
+           color = "#2a475e", hjust = "left", family = "poppins") +
+  annotate(geom = "text", x = 2, y = 183,
+           label = paste0("Bondad de ajuste (R2) = ",
+                          round(summary(reg)$r.squared, 3)),
+           color = "#2a475e", hjust = "left", family = "poppins") +
+  annotate(geom = "curve", x = 7.3, y = 175, xend = 4, yend = 150, 
+           color = "#be2e2e", curvature = -0.6, size = 1.5,
+           arrow = arrow(length = unit(3.5, "mm"))) +
+  annotate(geom = "text", x = 2, y = 163,
+           label = paste0("Existe correlación (un patrón):\n",
+                          "la media de las papeletas decrece\n",
+                          "según avanzan los meses del año"),
+           color = "#be2e2e", hjust = "left", family = "lobstertwo") +
+  annotate(geom = "curve", x = 7.4, y = 172, xend = 8.7, yend = 162.7, 
+           color = "#be2e2e", curvature = 0, size = 1,
+           arrow = arrow(length = unit(2.5, "mm"))) +
+  scale_color_stata() + scale_fill_stata() +
+  labs(title = "REGRESIÓN MES VS Nº PAPELETAS MEDIO",
+       subtitle =
+         paste0("Gráfico: Javier Álvarez Liébana (@DadosDeLaplace) | ",
+                "Datos: Draft lottery (1969)"),
+       x = "Meses (X)", y = "Nº papeletas medio (Y)") +
+  theme(legend.box.spacing =  unit(2.7, "cm"))
+fig9
+
+# Exportamos
+ruta <- here("plots", "#matesendomingo",
+             "2021_07_27_DRAFT_LOTTERY_VIETNAM", "fig9")
+ggsave(glue("{ruta}.pdf"),
+       width = 13, height = 8, device = cairo_pdf)
+pdftools::pdf_convert(glue("{ruta}.pdf"), filenames = glue("{ruta}.png"),
+                      format = "png", dpi = 300)
+```
+
+```{r fig10, fig.width = 13, fig.height = 8}
+# 10. Scatter + desviaciones horiz. respecto a lo esperado
+
+# Calculamos la media global del número de papaleta
+media_global <- mean(draft_69$papeletas)
+draft_69_join <- left_join(draft_69, draft_69_stats, by = "meses")
+
+fig10 <- ggplot(draft_69_join, aes(x = papeletas, y = meses, color = meses)) +
+  # Segmento horizontal con la desviación hasta la media
+  geom_segment(aes(x = media_global, xend = media_papeletas,
+                   y = meses, yend = meses), size = 0.9) +
+  # Línea ertical con la media
+  geom_vline(aes(xintercept = media_global),
+             color = "grey50", size = 0.9) +
+  coord_cartesian(clip = "off") +
+  # Añadimos punto grande con la media en cada mes
+  stat_summary(fun = mean, geom = "point", size = 9, alpha = 0.9) +
+  # Añadimos datos como puntos dispersos
+  geom_jitter(size = 4, alpha = 0.4, width = 0.4) +
+  scale_x_continuous(limits = c(1, 420), expand = c(0.05, 0.05),
+                     breaks = c(1, seq(30, 366, by = 30))) +
+  scale_color_stata() + scale_fill_stata() +
+  annotate(geom = "curve", x = media_global + 30, y = 14,
+           xend = media_global + 3, yend = 13,
+           curvature = -0.3, size = 1.1, color = "grey50",
+           arrow = arrow(length = unit(3, "mm"))) +
+  annotate(geom = "text", x = media_global + 2, y = 14.3,
+           label = paste0("La media global (y la esperada) del nº ",
+                          "de papeleta es ", media_global),
+           color = "grey50", hjust = "left", family = "lobstertwo") +
+  annotate(geom = "curve", x = 75, y = 13.7,
+           xend = 40, yend = 12.7,
+           curvature = 0.4, size = 1.1, color = "#9c8847",
+           arrow = arrow(length = unit(3, "mm"))) +
+  annotate(geom = "text", x = 77.5, y = 13.5,
+           label = paste0("Valores muy bajos en dic y nov:\n",
+                          "mayor probabilidad de ir a la guerra"),
+           color = "#9c8847", hjust = "left", family = "lobstertwo") +
+  annotate(geom = "curve", x = 375, y = 2.3,
+           xend = 340, yend = 1.5,
+           curvature = 0.7, size = 1.1, color = "#1a476f",
+           arrow = arrow(length = unit(3, "mm"))) +
+  annotate(geom = "text", x = 377, y = 1.8,
+           label = paste0("Valores altos: menor\n",
+                          "prob. de ir a la guerra"),
+           color = "#1a476f", hjust = "left", family = "lobstertwo") +
+  annotate(geom = "curve", x = 230, y = 13,
+           xend = 157, yend = 11.3,
+           curvature = -0.2, size = 1.1, color = "#2d6d66",
+           arrow = arrow(length = unit(3, "mm"))) +
+  annotate(geom = "curve", x = 231, y = 12.8,
+           xend = media_global + 6, yend = 10.4,
+           curvature = -0.2, size = 1.1, color = "#7b92a8",
+           arrow = arrow(length = unit(3, "mm"))) +
+  annotate(geom = "text", x = 233, y = 13.1,
+           label = paste0("Medias de las papeletas por mes"),
+           color = "grey20", hjust = "left", family = "lobstertwo") +
+  labs(title = "DISTRIBUCIÓN DE LAS PAPELETAS POR MES",
+       subtitle =
+         paste0("Gráfico: Javier Álvarez Liébana (@DadosDeLaplace) | ",
+                "Inspirado en «The evolution of a ggplot» ",
+                "(Cédric Scherer)\nDatos: Draft lottery (1969)"),
+       x = "Papeletas", y = "Meses") +
+  theme(legend.position = "none")
+fig10
+
+# Exportamos
+ruta <- here("plots", "#matesendomingo",
+             "2021_07_27_DRAFT_LOTTERY_VIETNAM", "fig10")
+ggsave(glue("{ruta}.pdf"),
+       width = 13, height = 8, device = cairo_pdf)
+pdftools::pdf_convert(glue("{ruta}.pdf"), filenames = glue("{ruta}.png"),
+                      format = "png", dpi = 300)
+```
+
+```{r fig11, fig.width = 13, fig.height = 8}
+# 11. Gráfico de cajas y bigotes + densidad + simulación Monte Carlo
+
+# Fijamos semilla aleatoria para que siempre salga la misma generación
+set.seed(123456789)
+
+# Simulamos 1000 draft distintos y guardamos como 
+# quedarían las papeletas a lo largo de los meses
+simulaciones <- 1e3 # 1000 simulaciones
+draft_simulado <- c()
+for (i in 1:simulaciones) {
+  
+  draft_simulado <- c(draft_simulado,
+                      sample(1:366, size = 366, replace = FALSE))
+  
+}
+draft_simulado <-
+  data.frame("meses" = rep(draft_69$meses, simulaciones),
+             "papeletas" = draft_simulado,
+             "simulacion" = rep(1:simulaciones, 366))
+
+# Calculamos desviaciones
+desv_simul <- draft_simulado %>% group_by(meses, simulacion) %>%
+  summarize(media = mean(papeletas))
+desv_simul$desv_abs <- abs(desv_simul$media - media_global)
+sum_desv_abs <- desv_simul %>% group_by(simulacion) %>%
+  summarize(sum_desv_abs = sum(desv_abs))
+
+# Calculamos valor absoluto de la suma de desviaciones de cada simulación
+# respecto a la media de la suma de desviaciones de cada simulación
+sum_desv_abs$color <- abs(sum_desv_abs$sum_desv_abs -
+  mean(sum_desv_abs$sum_desv_abs))
+
+fig11 <-
+  ggplot(sum_desv_abs, # y, x y color
+         aes(y = -0.27, x = sum_desv_abs, color = color)) +
+  # Función de densidad
+  ggdist::stat_halfeye(adjust = 0.5, width = .6, .width = 0,
+                       justification = -0.3, point_colour = NA,
+                       shape = 18, point_size = 3,
+                       interval_size = 1.8, fill = "#2a475e",
+                       alpha = 0.8) + 
+  # Línea vertical con el percentil 98 % 
+  geom_vline(aes(xintercept = quantile(sum_desv_abs, probs = c(0.98))),
+             color = "#be2e2e", alpha = 0.7,
+             linetype = "dashed", size = 1) +
+  # Gráfico de cajas y bigotes debajo
+  geom_boxplot(width = .2, outlier.shape = NA,
+               fill = "black", alpha = 0.1) +
+  # Degragado en los colores de puntos en función de la desvbiación
+  scale_color_distiller(palette = "RdYlBu") +
+  scale_fill_distiller(palette = "RdYlBu") +
+  geom_text(aes(x = mean(sum_desv_abs),
+            label = paste0("Media de la suma de desv. absolutas: ",
+                           round(mean(sum_desv_abs), 2))),
+            stat = "unique", color = "black",
+            family = "poppins", fontface = "bold",
+            nudge_y = 0.35) +
+  # Añadimos puntos dispersos debajo
+  geom_point(size = 2.5, alpha = 0.5,
+             position = position_jitter(seed = 1, width = 0.1,
+                                        height = 0.25)) +
+  # Añadimos líneas de puntos horizontales
+  stat_summary(geom = "linerange", fun.min = function(x) - Inf,
+               fun.max = function(x) + Inf,
+               linetype = "dotted", orientation = "y", size = 0.5) +
+  # Añadimos puntos en forma | encima del gráfico de cajas y bigotes
+  geom_point(aes(y = -0.5), shape = "|", size = 5, alpha = 0.7) +
+  # Añadimos punto más grueso con el Draft del 69
+  geom_point(x = sum(draft_69_stats$desv_abs_papeletas), y = -0.1,
+             size = 3.5, color = "#2a475e", alpha = 0.3) +
+  # Anotaciones
+  annotate(geom = "curve", y = -0.05, yend = 0.17,
+           x = sum(draft_69_stats$desv_abs_papeletas),
+           xend = sum(draft_69_stats$desv_abs_papeletas) + 10,
+           curvature = -0.15, size = 1.1, color = "#2a475e",
+           arrow = arrow(length = unit(3, "mm"))) +
+  annotate(geom = "text",
+           x = sum(draft_69_stats$desv_abs_papeletas) - 5, y = 0.27,
+           label =  paste0("El draft del 69 era altamente\n",
+                           "improbable (de ser aleatorio)"),
+           color = "#2a475e", hjust = "left", family = "lobstertwo") +
+  annotate(geom = "curve", y = 0.75, yend = 1.05,
+           x = quantile(sum_desv_abs$sum_desv_abs, probs = c(0.98)) - 3,
+           xend = quantile(sum_desv_abs$sum_desv_abs, probs = c(0.98)) - 50,
+           curvature = -0.3, size = 1.1, color = "#be2e2e",
+           arrow = arrow(length = unit(3, "mm"))) +
+  annotate(geom = "text",
+           x = quantile(sum_desv_abs$sum_desv_abs, probs = c(0.98)) - 150,
+           y = 1.05,
+           label =
+             paste0("De cada 100 sorteos aleatorios, en 98 se tendrían resultados\n",
+                    "con menor desviación que el obtenido en el draft del 69"),
+           color = "#be2e2e", hjust = "left", family = "lobstertwo") +
+  annotate(geom = "curve", y = 0.45, yend = 0.7,
+           x = quantile(sum_desv_abs$sum_desv_abs, probs = c(0.98)) + 3,
+           xend = quantile(sum_desv_abs$sum_desv_abs, probs = c(0.98)) + 40,
+           curvature = 0.4, size = 1.1, color = "#be2e2e",
+           arrow = arrow(length = unit(3, "mm"))) +
+  annotate(geom = "text",
+           x = quantile(sum_desv_abs$sum_desv_abs, probs = c(0.98)) + 2,
+           y = 0.85,
+           label =
+             paste0("La probabilidad de haber\n",
+                    "obtenido un sorteo «menos\n",
+                    "aleatorio» que el draft del 69\n",
+                    "era inferior al 2%"),
+           color = "#be2e2e", hjust = "left", family = "lobstertwo") +
+  labs(title = paste0("SIMULACIÓN DE ", simulaciones,
+                      " DRAFTS ALEATORIOS"),
+       subtitle =
+         paste0("Gráfico: Javier Álvarez Liébana (@DadosDeLaplace) | ",
+                "Inspirado en «Bill ratios in brush–tailed penguins» ",
+                "(Cédric Scherer)\nDatos: Draft lottery (1969)"),
+       x = "Suma de la desviaciones absolutas",
+       y = "Veces que ha sucedido",
+       color = "Desv. absoluta\nresp. media") +
+  theme(axis.ticks.x = element_blank(), axis.text.x = element_blank(),
+        axis.ticks.y = element_blank(), axis.text.y = element_blank())
+fig11
+
+# Exportamos
+ruta <- here("plots", "#matesendomingo",
+             "2021_07_27_DRAFT_LOTTERY_VIETNAM", "fig11")
+ggsave(glue("{ruta}.pdf"),
+       width = 13, height = 8, device = cairo_pdf)
+pdftools::pdf_convert(glue("{ruta}.pdf"), filenames = glue("{ruta}.png"),
+                      format = "png", dpi = 300)
+```
+
+***
+
+```{r sesion}
+sessionInfo()
+```
