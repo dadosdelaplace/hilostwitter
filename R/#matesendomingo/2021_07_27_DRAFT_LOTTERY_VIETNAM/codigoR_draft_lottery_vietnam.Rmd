@@ -130,7 +130,7 @@ fig1 <- ggplot(draft_69, aes(x = dias_anual, y = papeletas)) +
                 "Datos: Draft lottery (1969)"),
        x = "Días del año de nacimiento", y = "Número de la papeleta") +
   # Separación con leyenda
-  theme(legend.box.spacing =  unit(0.7, "cm"))
+  theme(legend.box.spacing = unit(0.7, "cm"))
 fig1
 
 # Exportamos

@@ -1,0 +1,489 @@
+---
+title: "codigoR_central_limit_theorem"
+author: "Javier Álvarez Liébana"
+date: "6th of June 2021"
+output:
+  html_document:
+    theme: paper
+    highlight: kate
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r ajustes, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, fig.showtext = T, fig.retina = 1)
+```
+
+```{r preparacion, message = FALSE}
+rm(list = ls()) # borramos entorno
+# setwd(dirname(rstudioapi::getSourceEditorContext()$path)) # fijamos directorio
+# Instalamos paquetes necesarios
+repos <- "http://cran.us.r-project.org"
+if(!require(ggplot2)) install.packages("ggplot2", repos = repos)
+if(!require(latex2exp)) install.packages("latex2exp", repos = repos)
+if(!require(tidyverse)) install.packages("tidyverse", repos = repos)
+if(!require(lubridate)) install.packages("lubridate", repos = repos)
+if(!require(ggthemes)) install.packages("ggthemes", repos = repos)
+if(!require(patchwork)) install.packages("patchwork", repos = repos)
+if(!require(colorspace)) install.packages("colorspace", repos = repos)
+if(!require(calendR)) install.packages("calendR", repos = repos)
+if(!require(patchwork)) install.packages("patchwork", repos = repos)
+if(!require(here)) install.packages("here", repos = repos)
+if(!require(glue)) install.packages("glue", repos = repos)
+if(!require(pdftools)) install.packages("pdftools", repos = repos)
+```
+
+```{r generacion-normales}
+# Normales iniciales
+set.seed(1234567)
+t <- seq(-4, 4, l = 2e2) # densidad entre -4 y 4
+x1 <- dnorm(t, mean = 0, sd = 1)
+x2 <- dnorm(t, mean = -1, sd = 0.7)
+x3 <- dnorm(t, mean = 1, sd = 0.5)
+x4 <- dnorm(t, mean = 0.5, sd = 1.5)
+
+# Normales y medias
+normales <- tibble::as_tibble(cbind(t, x1, x2, x3, x4))
+medias <- data.frame("variable" = c("x1", "x2", "x3", "x4"),
+                     "media" = c(0, -1, 1, 0.5))
+```
+
+```{r tema-base-fuentes-plots}
+# Fuentes para los gráficos
+library(showtext)
+font_add_google("Lobster Two", "lobstertwo")
+font_add_google("Poppins", "poppins")
+showtext_auto()
+
+# Tema base
+theme_set(theme_bw())
+theme_update(
+  # Fuentes y ajustes de la leyenda
+  legend.text = element_text(size = 15, family = "poppins"),
+  legend.title = element_text(face = "bold", size = 17, color = "chocolate",
+                              family = "poppins"),
+  # Fuentes de los textos
+  text = element_text(family = "poppins", size = 15, color = "black"),
+  # Fuentes y ajustes de título, subtítulo y caption
+  plot.title = element_text(family = "poppins", size = 25,
+                            face = "bold", color = "#2a475e"),
+  plot.subtitle = element_text(family = "poppins", size = 15,
+                               face = "bold", color = "black"),
+  plot.caption = element_text(size = 15, family = "poppins"),
+  # Fuentes y ajustes de los ejes
+  axis.text = element_text(size = 15, color = "grey50",
+                           family = "poppins"),
+  axis.title = element_text(size = 19, family = "poppins"),
+  axis.ticks = element_blank(), axis.line = element_line(colour = "grey50"),
+  # Ajustes del grid
+  rect = element_blank(), panel.grid = element_line(color = "#b4aea9"),
+  panel.grid.minor = element_blank(),
+  panel.grid.major.x = element_blank(),
+  panel.grid.major.y = element_line(linetype = "dashed"),
+  plot.background =
+    element_rect(fill = "#fbf9f4", color = "#fbf9f4"),
+  # Márgenes
+  plot.margin = # márgenes
+    margin(t = 0.5, b = 0.5, r = 0.9, l = 0.9, "cm"))
+```
+
+```{r fig1, fig.width = 13, fig.height = 8}
+fig1 <- ggplot(normales, aes(x = t)) +
+  # Pintamos las cuatro normales con un diagram de puntos (tamaño 2)
+  geom_point(aes(y = x1, color = "dodgerblue4"), size = 2) +
+  geom_point(aes(y = x2, color = "darkolivegreen4"), size = 2) +
+  geom_point(aes(y = x3, color = "darkorchid3"), size = 2) +
+  geom_point(aes(y = x4, color = "goldenrod1"), size = 2) +
+  # Línea vertical para las medias (discontinua, de tamaño 0.5)
+  geom_vline(data = medias, aes(xintercept = media),
+             linetype = "dashed", size = 0.5) +
+  # Escala de colores de tableau
+  scale_color_tableau(name = "Distribuciones normales", 
+                      labels = c("Media 0, desviación 1",
+                                 "Media -1, desviación 0.7",
+                                 "Media 1, desviación 0.5",
+                                 "Media 0.5, desviación 1.5")) +
+  # Título, subítutlo y ejes
+  labs(x = "x", y = "Funciones de densidad f(x) normales",
+       title = "DISTRIBUCIÓN NORMAL Y TEOREMA CENTRAL DEL LÍMITE",
+       subtitle = "Autor: Javier Álvarez Liébana (@DadosDeLaplace)") +
+  # Separación con leyenda
+  theme(legend.box.spacing = unit(0.7, "cm"))
+fig1
+
+# Exportamos
+ruta <- here("plots", "#matesendomingo",
+             "2021_06_06_CENTRAL_LIMIT_THEOREM", "fig1")
+ggsave(glue("{ruta}.pdf"),
+       width = 13, height = 8, device = cairo_pdf)
+pdf_convert(glue("{ruta}.pdf"), filenames = glue("{ruta}.png"),
+            format = "png", dpi = 300)
+```
+
+```{r fig2, fig.width = 13, fig.height = 8}
+# Tiradas de monedas: 2 tiradas
+
+# Repetimos 1000 veces el experimento de tirar 2 veces una moneda y apuntamos
+# el número de caras. El número de caras sigue una distribución
+# binomial: n realizaciones de un experimento dicotómico (cara/cruz)
+# cuyas realizaciones son independientes.
+tiradas_moneda <- data.frame("caras" = rbinom(1e3, 2, prob = 0.5))
+fig2 <- ggplot(tiradas_moneda, aes(x = caras)) +
+  # Pintamos en barras el número de caras que obtenemos
+  # en los 1000 experimentos
+  geom_bar(fill = "darkolivegreen4") +
+  # Título, subtítulo y ejes
+  labs(x = "Número de caras", y = "Tiradas en las que sucede",
+       title = "NÚMERO DE CARAS AL TIRAR 2 MONEDAS (REPETIDO 1000 VECES)",
+       subtitle = "Autor: Javier Álvarez Liébana (@DadosDeLaplace)") +
+  # Separación con leyenda
+  theme(legend.box.spacing = unit(0.7, "cm"))
+fig2
+
+# Exportamos
+ruta <- here("plots", "#matesendomingo",
+             "2021_06_06_CENTRAL_LIMIT_THEOREM", "fig2")
+ggsave(glue("{ruta}.pdf"),
+       width = 13, height = 8, device = cairo_pdf)
+pdf_convert(glue("{ruta}.pdf"), filenames = glue("{ruta}.png"),
+            format = "png", dpi = 300)
+```
+
+```{r fig3, fig.width = 13, fig.height = 8}
+# Tiradas de monedas: 3 tiradas
+
+# Repetimos 1000 veces el experimento de tirar 3 veces una moneda y apuntamos el número de caras
+tiradas_moneda <- data.frame("caras" = rbinom(1e3, 3, prob = 0.5))
+fig3 <- ggplot(tiradas_moneda, aes(x = caras)) +
+  # Pintamos en barras el número de caras que obtenemos
+  # en los 1000 experimentos
+  geom_bar(fill = "darkolivegreen4") +
+  labs(x = "Número de caras", y = "Tiradas en las que sucede",
+       title = "NÚMERO DE CARAS AL TIRAR 3 MONEDAS (REPETIDO 1000 VECES)",
+       subtitle = "Autor: Javier Álvarez Liébana (@DadosDeLaplace)") +
+  # Separación con leyenda
+  theme(legend.box.spacing = unit(0.7, "cm"))
+fig3
+
+# Exportamos
+ruta <- here("plots", "#matesendomingo",
+             "2021_06_06_CENTRAL_LIMIT_THEOREM", "fig3")
+ggsave(glue("{ruta}.pdf"),
+       width = 13, height = 8, device = cairo_pdf)
+pdf_convert(glue("{ruta}.pdf"), filenames = glue("{ruta}.png"),
+            format = "png", dpi = 300)
+```
+
+```{r fig4, fig.width = 13, fig.height = 8}
+# Tiradas de monedas: 12 tiradas
+
+# Repetimos 1000 veces el experimento de tirar 12 veces una moneda y apuntamos el número de caras
+tiradas_moneda <- data.frame("caras" = rbinom(1e3, 12, prob = 0.5))
+fig4 <- ggplot(tiradas_moneda, aes(x = caras)) +
+  # Pintamos en barras el número de caras que obtenemos
+  # en los 1000 experimentos
+  geom_bar(fill = "darkolivegreen4") +
+  labs(x = "Número de caras", y = "Tiradas en las que sucede",
+       title = "NÚMERO DE CARAS AL TIRAR 12 MONEDAS (REPETIDO 1000 VECES)",
+       subtitle = "Autor: Javier Álvarez Liébana (@DadosDeLaplace)") +
+  # Separación con leyenda
+  theme(legend.box.spacing = unit(0.7, "cm"))
+fig4
+
+# Exportamos
+ruta <- here("plots", "#matesendomingo",
+             "2021_06_06_CENTRAL_LIMIT_THEOREM", "fig4")
+ggsave(glue("{ruta}.pdf"),
+       width = 13, height = 8, device = cairo_pdf)
+pdf_convert(glue("{ruta}.pdf"), filenames = glue("{ruta}.png"),
+            format = "png", dpi = 300)
+```
+
+```{r fig5, fig.width = 13, fig.height = 8}
+# Generamos y pintamos diferentes experimentos (repetido 5000 veces)
+# de tirar 50 monedas trucadas (binomial pero cambiamos la
+# probabilidad de cara)
+tiradas_moneda <-
+  data.frame("caras" = c(rbinom(5e3, 50, prob = 0.5),
+                         rbinom(5e3, 50, prob = 0.7),
+                         rbinom(5e3, 50, prob = 0.9),
+                         rbinom(5e3, 50, prob = 0.15)),
+             "prob_cara" = as.factor(c(rep(0.5, 5e3), rep(0.7, 5e3),
+                                       rep(0.9, 5e3), rep(0.15, 5e3))))
+fig5 <- ggplot(tiradas_moneda,
+            aes(x = caras, fill = prob_cara, color = prob_cara)) +
+  # Pintamos los resultados (el número de caras) de 50 tiradas
+  geom_histogram(position = "identity", alpha = 0.4, bins = 30) +
+  scale_color_tableau() + scale_fill_tableau() +
+  labs(x = "Número de caras", y = "Tiradas en las que sucede",
+       title = "NÚMERO DE CARAS AL TIRAR 50 MONEDAS (REPETIDO 5000 VECES)",
+       subtitle =
+         paste0("Prob. de salir cara: 15%-50%-70%-90%. ",
+                "Autor: Javier Álvarez Liébana (@DadosDeLaplace)")) +
+  # Separación con leyenda
+  theme(legend.box.spacing = unit(0.7, "cm"))
+fig5
+
+# Exportamos
+ruta <- here("plots", "#matesendomingo",
+             "2021_06_06_CENTRAL_LIMIT_THEOREM", "fig5")
+ggsave(glue("{ruta}.pdf"),
+       width = 13, height = 8, device = cairo_pdf)
+pdf_convert(glue("{ruta}.pdf"), filenames = glue("{ruta}.png"),
+            format = "png", dpi = 300)
+```
+
+```{r fig6, fig.width = 13, fig.height = 8}
+# Hacemos lo mismo pero con 1 millón de repeticiones (tirando 300
+# veces en cada uno) para ver mejor las diferencias
+tiradas_moneda <-
+  data.frame("caras" = c(rbinom(1e6, 300, prob = 0.5),
+                         rbinom(1e6, 300, prob = 0.7),
+                         rbinom(1e6, 300, prob = 0.9),
+                         rbinom(1e6, 300, prob = 0.15)),
+             "prob_cara" = as.factor(c(rep(0.5, 1e6), rep(0.7, 1e6),
+                                       rep(0.9, 1e6), rep(0.15, 1e6))))
+fig6 <- ggplot(tiradas_moneda,
+            aes(x = caras, fill = prob_cara, color = prob_cara)) +
+  geom_histogram(position = "identity", alpha = 0.4, bins = 150) +
+  scale_color_tableau() + scale_fill_tableau() +
+  labs(x = "Número de caras", y = "Tiradas en las que sucede",
+       title = "Nº CARAS AL TIRAR 300 MONEDAS (REPETIDO 1 000 000 VECES)",
+       subtitle =
+         paste0("Prob. de salir cara: 15%-50%-70%-90%. ",
+                "Autor: Javier Álvarez Liébana (@DadosDeLaplace)")) +
+  # Separación con leyenda
+  theme(legend.box.spacing = unit(0.7, "cm"))
+fig6
+
+# Exportamos
+ruta <- here("plots", "#matesendomingo",
+             "2021_06_06_CENTRAL_LIMIT_THEOREM", "fig6")
+ggsave(glue("{ruta}.pdf"),
+       width = 13, height = 8, device = cairo_pdf)
+pdf_convert(glue("{ruta}.pdf"), filenames = glue("{ruta}.png"),
+            format = "png", dpi = 300)
+```
+
+```{r fig7, fig.width = 13, fig.height = 8}
+# Generamos 1 millón de experimentos en los que tiramos en cada uno
+# de ellos 10 dados y sumamos su caras
+tiradas_dados <- # Replicate: replicar la expresión que se le pase
+  replicate(1e6, expr = sample(1:6, 10, replace = TRUE))
+suma_dados <- # Suma de las tiradas
+  data.frame("suma" = colSums(tiradas_dados))
+
+fig7 <- ggplot(suma_dados, aes(x = suma)) +
+  # Gráfico de barras
+  geom_bar(fill = "darkolivegreen4") +
+  labs(x = "Suma de los 10 dados", y = "Veces en las que sucede",
+       title = "SUMA DE DIEZ DADOS (REPETIDO 1 000 000 VECES)",
+       subtitle = "Autor: Javier Álvarez Liébana (@DadosDeLaplace)") +
+  # Separación con leyenda
+  theme(legend.box.spacing = unit(0.7, "cm"))
+fig7
+
+# Exportamos
+ruta <- here("plots", "#matesendomingo",
+             "2021_06_06_CENTRAL_LIMIT_THEOREM", "fig7")
+ggsave(glue("{ruta}.pdf"),
+       width = 13, height = 8, device = cairo_pdf)
+pdf_convert(glue("{ruta}.pdf"), filenames = glue("{ruta}.png"),
+            format = "png", dpi = 300)
+```
+
+```{r teorema-central-limite}
+# Ilustración empírica del teorema central del límite
+# para distintas distribuciones: la suma (o media) de una colección de
+# variables aleatorias suficientemente grande acaba tendiendo a 
+# una normal.
+# Generaremos: Normal, Uniforme, Binomial, Exponencial, Poisson
+
+n <- 1e6
+# Generamos las normales de media 0 y desv. típica 1, y sumamos
+# 2, 5, 10, 20, 50 variables.
+normal <-
+  data.frame(matrix(rnorm(n, mean = 0, sd = 1), ncol = 100))
+normal$media_2 <- rowMeans(cbind(normal[, 1:2]))
+normal$media_5 <- rowMeans(cbind(normal[, 1:5]))
+normal$media_10 <- rowMeans(cbind(normal[, 1:10]))
+normal$media_20 <- rowMeans(cbind(normal[, 1:20]))
+normal$media_50 <- rowMeans(cbind(normal[, 1:50]))
+
+# Generamos las uniformes (entre -0.5 y 0.5), y sumamos
+# 2, 5, 10, 20, 50 variables.
+uniforme <-
+  data.frame(matrix(runif(n, min = -0.5, max = 0.5), ncol = 100))
+uniforme$media_2 <- rowMeans(cbind(uniforme[, 1:2]))
+uniforme$media_5 <- rowMeans(cbind(uniforme[, 1:5]))
+uniforme$media_10 <- rowMeans(cbind(uniforme[, 1:10]))
+uniforme$media_20 <- rowMeans(cbind(uniforme[, 1:20]))
+uniforme$media_50 <- rowMeans(cbind(uniforme[, 1:50]))
+
+# Generamos las binomiales de tamaño 100 y prob = 0.1, y sumamos
+# 2, 5, 10, 20, 50 variables.
+binomial <-
+  data.frame(matrix(rbinom(n, size = 100, prob = 0.1), ncol = 100))
+binomial$media_2 <- rowMeans(cbind(binomial[, 1:2]))
+binomial$media_5 <- rowMeans(cbind(binomial[, 1:5]))
+binomial$media_10 <- rowMeans(cbind(binomial[, 1:10]))
+binomial$media_20 <- rowMeans(cbind(binomial[, 1:20]))
+binomial$media_50 <- rowMeans(cbind(binomial[, 1:50]))
+
+# Generamos las exponenciales de ratio 1, y sumamos
+# 2, 5, 10, 20, 50 variables.
+exponencial <-
+  data.frame(matrix(rexp(n, rate = 1), ncol = 100))
+exponencial$media_2 <- rowMeans(cbind(exponencial[, 1:2]))
+exponencial$media_5 <- rowMeans(cbind(exponencial[, 1:5]))
+exponencial$media_10 <- rowMeans(cbind(exponencial[, 1:10]))
+exponencial$media_20 <- rowMeans(cbind(exponencial[, 1:20]))
+exponencial$media_50 <- rowMeans(cbind(exponencial[, 1:50]))
+
+# Generamos las Poisson de media 1, y sumamos
+# 2, 5, 10, 20, 50 variables.
+poisson <-
+  data.frame(matrix(rpois(n, lambda = 1), ncol = 100))
+poisson$media_2 <- rowMeans(cbind(poisson[, 1:2]))
+poisson$media_5 <- rowMeans(cbind(poisson[, 1:5]))
+poisson$media_10 <- rowMeans(cbind(poisson[, 1:10]))
+poisson$media_20 <- rowMeans(cbind(poisson[, 1:20]))
+poisson$media_50 <- rowMeans(cbind(poisson[, 1:50]))
+```
+
+```{r fig8, fig.width = 13, fig.height = 8}
+# Normal
+fig8 <-
+  ggplot(data.frame("medias" =
+                      c(rep("media_02", 1e4), rep("media_05", 1e4),
+                        rep("media_10", 1e4), rep("media_20", 1e4),
+                        rep("media_50", 1e4)),
+                    "valores" = c(normal$media_2, normal$media_5,
+                                  normal$media_10, normal$media_20,
+                                  normal$media_50)),
+         aes(x = valores, fill = medias, color = medias)) +
+  geom_histogram(position = "identity", alpha = 0.4, bins = 80) +
+  scale_color_tableau() + scale_fill_tableau() +
+  labs(x = "Valor de la media de experimentos", y = "Veces que sucede",
+       title = "TEOREMA CENTRAL DEL LÍMITE DE LA DISTRIBUCIÓN NORMAL",
+       subtitle = "Autor: Javier Álvarez Liébana (@DadosDeLaplace)") +
+  # Separación con leyenda
+  theme(legend.box.spacing = unit(0.7, "cm"))
+fig8
+
+# Exportamos
+ruta <- here("plots", "#matesendomingo",
+             "2021_06_06_CENTRAL_LIMIT_THEOREM", "fig8")
+ggsave(glue("{ruta}.pdf"),
+       width = 13, height = 8, device = cairo_pdf)
+pdf_convert(glue("{ruta}.pdf"), filenames = glue("{ruta}.png"),
+            format = "png", dpi = 300)
+```
+
+```{r fig9, fig.width = 13, fig.height = 8}
+# Uniforme
+fig9 <- ggplot(data.frame("medias" = c(rep("media_02", 1e4), rep("media_05", 1e4),
+                                     rep("media_10", 1e4), rep("media_20", 1e4),
+                                     rep("media_50", 1e4)),
+                        "valores" = c(uniforme$media_2, uniforme$media_5,
+                                      uniforme$media_10, uniforme$media_20,
+                                      uniforme$media_50)),
+             aes(x = valores, fill = medias, color = medias))  +
+  geom_histogram(position = "identity", alpha = 0.4, bins = 80) +
+  scale_color_tableau() + scale_fill_tableau() +
+  labs(x = "Valor de la media de experimentos", y = "Veces que sucede",
+       title = "TEOREMA CENTRAL DEL LÍMITE DE LA DISTRIBUCIÓN UNIFORME",
+       subtitle = "Autor: Javier Álvarez Liébana (@DadosDeLaplace)") +
+  # Separación con leyenda
+  theme(legend.box.spacing = unit(0.7, "cm"))
+fig9
+
+# Exportamos
+ruta <- here("plots", "#matesendomingo",
+             "2021_06_06_CENTRAL_LIMIT_THEOREM", "fig9")
+ggsave(glue("{ruta}.pdf"),
+       width = 13, height = 8, device = cairo_pdf)
+pdf_convert(glue("{ruta}.pdf"), filenames = glue("{ruta}.png"),
+            format = "png", dpi = 300)
+```
+
+```{r fig10, fig.width = 13, fig.height = 8}
+# Binomial
+fig10 <- ggplot(data.frame("medias" = c(rep("media_02", 1e4), rep("media_05", 1e4),
+                                     rep("media_10", 1e4), rep("media_20", 1e4),
+                                     rep("media_50", 1e4)),
+                        "valores" = c(binomial$media_2, binomial$media_5,
+                                      binomial$media_10, binomial$media_20,
+                                      binomial$media_50)),
+             aes(x = valores, fill = medias, color = medias))   +
+  geom_histogram(position = "identity", alpha = 0.4, bins = 80) +
+  scale_color_tableau() + scale_fill_tableau() +
+  labs(x = "Valor de la media de experimentos", y = "Veces que sucede",
+       title = "TEOREMA CENTRAL DEL LÍMITE DE LA DISTRIBUCIÓN BINOMIAL",
+       subtitle = "Autor: Javier Álvarez Liébana (@DadosDeLaplace)") +
+  # Separación con leyenda
+  theme(legend.box.spacing = unit(0.7, "cm"))
+fig10
+
+# Exportamos
+ruta <- here("plots", "#matesendomingo",
+             "2021_06_06_CENTRAL_LIMIT_THEOREM", "fig10")
+ggsave(glue("{ruta}.pdf"),
+       width = 13, height = 8, device = cairo_pdf)
+pdf_convert(glue("{ruta}.pdf"), filenames = glue("{ruta}.png"),
+            format = "png", dpi = 300)
+```
+
+```{r fig11, fig.width = 13, fig.height = 8}
+# Exponenciales
+fig11 <- ggplot(data.frame("medias" = c(rep("media_02", 1e4), rep("media_05", 1e4),
+                                     rep("media_10", 1e4), rep("media_20", 1e4),
+                                     rep("media_50", 1e4)),
+                        "valores" = c(exponencial$media_2, exponencial$media_5,
+                                      exponencial$media_10, exponencial$media_20,
+                                      exponencial$media_50)),
+             aes(x = valores, fill = medias, color = medias))   +
+  geom_histogram(position = "identity", alpha = 0.4, bins = 80) +
+  scale_color_tableau() + scale_fill_tableau() +
+  labs(x = "Valor de la media de experimentos", y = "Veces que sucede",
+       title = "TEOREMA CENTRAL DEL LÍMITE DE LA DISTRIBUCIÓN EXPONENCIAL",
+       subtitle = "Autor: Javier Álvarez Liébana (@DadosDeLaplace)") +
+  # Separación con leyenda
+  theme(legend.box.spacing = unit(0.7, "cm"))
+fig11
+
+# Exportamos
+ruta <- here("plots", "#matesendomingo",
+             "2021_06_06_CENTRAL_LIMIT_THEOREM", "fig11")
+ggsave(glue("{ruta}.pdf"),
+       width = 13, height = 8, device = cairo_pdf)
+pdf_convert(glue("{ruta}.pdf"), filenames = glue("{ruta}.png"),
+            format = "png", dpi = 300)
+``` 
+
+```{r fig12, fig.width = 13, fig.height = 8}
+# Poisson
+fig12 <- ggplot(data.frame("medias" = c(rep("media_02", 1e4), rep("media_05", 1e4),
+                                     rep("media_10", 1e4), rep("media_20", 1e4),
+                                     rep("media_50", 1e4)),
+                        "valores" = c(poisson$media_2, poisson$media_5,
+                                      poisson$media_10, poisson$media_20,
+                                      poisson$media_50)),
+             aes(x = valores, fill = medias, color = medias))   +
+  geom_histogram(position = "identity", alpha = 0.4, bins = 80) +
+  scale_color_tableau() + scale_fill_tableau() +
+  labs(x = "Valor de la media de experimentos", y = "Veces que sucede",
+       title = "TEOREMA CENTRAL DEL LÍMITE DE LA DISTRIBUCIÓN POISSON",
+       subtitle = "Autor: Javier Álvarez Liébana (@DadosDeLaplace)") +
+  # Separación con leyenda
+  theme(legend.box.spacing = unit(0.7, "cm"))
+fig12
+
+# Exportamos
+ruta <- here("plots", "#matesendomingo",
+             "2021_06_06_CENTRAL_LIMIT_THEOREM", "fig12")
+ggsave(glue("{ruta}.pdf"),
+       width = 13, height = 8, device = cairo_pdf)
+pdf_convert(glue("{ruta}.pdf"), filenames = glue("{ruta}.png"),
+            format = "png", dpi = 300)
+```
