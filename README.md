@@ -39,7 +39,7 @@ Javier Álvarez Liébana (@DadosDeLaplace)
 <!-- toc -->
 * **#MatesEnDomingo 2021**
   - 27/06/2021 [🗳⛑ Sorteo de Vietnam de 1969 / Draft Lottery (Vietnam) of 1969](https://github.com/dadosdelaplace/hilostwitter/tree/main/plots/%23matesendomingo/2021_07_27_DRAFT_LOTTERY_VIETNAM)
-  - 06/06/2021 [🎲👻 La historia de la campana de Gauss / The history of Gaussian distribution](.)
+  - 06/06/2021 [🎲👻 La historia de la campana de Gauss / The history of Gaussian distribution](https://github.com/dadosdelaplace/hilostwitter/tree/main/plots/%23matesendomingo/2021_06_06_CENTRAL_LIMIT_THEOREM)
 * **#MatesEnDomingo 2020**
   - 11/10/2020 [📊🗳 Ley de Benford / Benford's Law](https://github.com/)️
   - 06/09/2020 [🚕⛑ Contar taxis y el desembardo de Normandia / Counting on taxis and the Battle of Normandy](.)️
@@ -92,5 +92,42 @@ Javier Álvarez Liébana (@DadosDeLaplace)
 *Gráfico de cajas y bigotes + densidad + simulación Monte Carlo: simulamos 1000 draft distintos y guardamos como quedarían las papeletas a lo largo de los meses para ver lo extremo del resultado real*
 
 ***
+
+###  [06/06/2021 🎲👻 La historia de la campana de Gauss / The history of Gaussian distribution](https://github.com/dadosdelaplace/hilostwitter/tree/main/plots/%23matesendomingo/2021_06_06_CENTRAL_LIMIT_THEOREM)
+
+[🧶 HILO EN TWITTER / TWITTER THREAD](https://twitter.com/DadosdeLaplace/status/1401584861043908610)
+
+![](https://github.com/dadosdelaplace/hilostwitter/blob/main/plots/%23matesendomingo/2021_06_06_CENTRAL_LIMIT_THEOREM/fig1.png)
+*Distribuciones normales (campanas de Gauss) para diferentes medias y desviaciones típicas*
+
+![](https://github.com/dadosdelaplace/hilostwitter/blob/main/plots/%23matesendomingo/2021_06_06_CENTRAL_LIMIT_THEOREM/fig2.png)
+*Número de caras obtenidas al repetir 1000 veces el experimento de tirar 2 veces una moneda*
+
+![](https://github.com/dadosdelaplace/hilostwitter/blob/main/plots/%23matesendomingo/2021_06_06_CENTRAL_LIMIT_THEOREM/fig4.png)
+*Número de caras obtenidas al repetir 1000 veces el experimento de tirar 12 veces una moneda*
+
+![](https://github.com/dadosdelaplace/hilostwitter/blob/main/plots/%23matesendomingo/2021_06_06_CENTRAL_LIMIT_THEOREM/fig6.png)
+*Número de caras obtenidas al repetir 1 000 000 veces el experimento de tirar 300 veces una moneda trucada, para distintas probabilidades de sacar cara (15%-50%-70%-90%)*
+
+![](https://github.com/dadosdelaplace/hilostwitter/blob/main/plots/%23matesendomingo/2021_06_06_CENTRAL_LIMIT_THEOREM/fig7.png)
+*Suma de las tiradas de un dado obtenidas al repetir 1 000 000 veces el experimento de tirar 10 veces un dado*
+
+![](https://github.com/dadosdelaplace/hilostwitter/blob/main/plots/%23matesendomingo/2021_06_06_CENTRAL_LIMIT_THEOREM/fig8.png)
+*Teorema central del límite: media de 2-5-10-20-50 variables aleatorias normales*
+
+![](https://github.com/dadosdelaplace/hilostwitter/blob/main/plots/%23matesendomingo/2021_06_06_CENTRAL_LIMIT_THEOREM/fig9.png)
+*Teorema central del límite: media de 2-5-10-20-50 variables aleatorias uniformes*
+
+![](https://github.com/dadosdelaplace/hilostwitter/blob/main/plots/%23matesendomingo/2021_06_06_CENTRAL_LIMIT_THEOREM/fig10.png)
+*Teorema central del límite: media de 2-5-10-20-50 variables aleatorias binomiales*
+
+![](https://github.com/dadosdelaplace/hilostwitter/blob/main/plots/%23matesendomingo/2021_06_06_CENTRAL_LIMIT_THEOREM/fig11.png)
+*Teorema central del límite: media de 2-5-10-20-50 variables aleatorias exponenciales*
+
+![](https://github.com/dadosdelaplace/hilostwitter/blob/main/plots/%23matesendomingo/2021_06_06_CENTRAL_LIMIT_THEOREM/fig12.png)
+*Teorema central del límite: media de 2-5-10-20-50 variables aleatorias de Poisson*
+
+***
+
 
 
