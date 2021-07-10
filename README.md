@@ -3,9 +3,12 @@ Códigos R de los hilos de Twitter (R code of Twitter threads)
 Javier Álvarez Liébana (@DadosDeLaplace)
 -->
 
-<h1 style="font-weight:normal" align="center">
-  Códigos R de los hilos de Twitter (R codes of Twitter threads)
-</h1>
+Códigos R de los hilos de Twitter (R codes of Twitter threads)
+======
+
+[![License:
+GPLv3](https://img.shields.io/badge/license-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
+
 <div align="center">
 
 ### ✨ Algunas redes donde puedes encontrarme (social networks where you can follow me) :man_technologist:👀👇🏻
