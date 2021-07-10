@@ -1,27 +1,11 @@
 
-# DO NOT CHANGE: remove all variables and clean warnings
-rm(list = ls())
-assign("last.warning", NULL, envir = baseenv())
-options(warn = -1) # Disable warnings
-
-# DO NOT CHANGE: setting the working directory
-setwd(dirname(rstudioapi::getSourceEditorContext()$path))
-
-# DO NOT CHANGE: libraries required and source files that we will need
-repos <- "http://cran.us.r-project.org"
-if(!require(ggplot2)) install.packages("ggplot2", repos = repos)
-if(!require(plotly)) install.packages("plotly", repos = repos)
-if(!require(RColorBrewer)) install.packages("RColorBrewer", repos = repos)
-if(!require(stats)) install.packages("stats", repos = repos)
-if(!require(utils)) install.packages("utils", repos = repos)
-if(!require(av)) install.packages("av", repos = repos)
-if(!require(benford.analysis)) install.packages("benford.analysis",
-                                                repos = repos)
 options("scipen" = 10) 
 
 # Raw data from ISCIII for each date and each province
 url_isciii_prov <-
-  "https://cnecovid.isciii.es/covid19/resources/datos_provincias.csv"
+  paste0("https://raw.githubusercontent.com/dadosdelaplace/hilostwitter/",
+         "main/R/%23matesendomingo/2020_10_11_BENFORD_LAW_COVID/",
+         "datos_ISCIII.csv")
 raw_file <- read.csv(url_isciii_prov)
 
 # Checking if Benford's Law is held
