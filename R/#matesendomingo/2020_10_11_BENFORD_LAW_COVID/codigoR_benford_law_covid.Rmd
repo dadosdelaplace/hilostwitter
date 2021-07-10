@@ -179,7 +179,7 @@ fig1
 
 # Exportamos
 ruta <- here("plots", "#matesendomingo",
-             "2020_10_11_BENFORD_LAW_COVID", "fig11")
+             "2020_10_11_BENFORD_LAW_COVID", "fig1")
 ggsave(glue("{ruta}.pdf"),
        width = 13, height = 8, device = cairo_pdf)
 pdftools::pdf_convert(glue("{ruta}.pdf"), filenames = glue("{ruta}.png"),
@@ -248,7 +248,7 @@ fig2
 
 # Exportamos
 ruta <- here("plots", "#matesendomingo",
-             "2020_10_11_BENFORD_LAW_COVID", "fig11")
+             "2020_10_11_BENFORD_LAW_COVID", "fig2")
 ggsave(glue("{ruta}.pdf"),
        width = 13, height = 8, device = cairo_pdf)
 pdftools::pdf_convert(glue("{ruta}.pdf"), filenames = glue("{ruta}.png"),
