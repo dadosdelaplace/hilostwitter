@@ -41,7 +41,7 @@ Javier Álvarez Liébana (@DadosDeLaplace)
   - 27/06/2021 [🗳⛑ Sorteo de Vietnam de 1969 / Draft Lottery (Vietnam) of 1969](https://github.com/dadosdelaplace/hilostwitter/tree/main/plots/%23matesendomingo/2021_07_27_DRAFT_LOTTERY_VIETNAM)
   - 06/06/2021 [🎲👻 La historia de la campana de Gauss / The history of Gaussian distribution](https://github.com/dadosdelaplace/hilostwitter/tree/main/plots/%23matesendomingo/2021_06_06_CENTRAL_LIMIT_THEOREM)
 * **#MatesEnDomingo 2020**
-  - 11/10/2020 [📊🗳 Ley de Benford / Benford's Law](...)️
+  - 11/10/2020 [📊🗳 Ley de Benford / Benford's Law](https://github.com/dadosdelaplace/hilostwitter/tree/main/plots/%23matesendomingo/2020_10_11_BENFORD_LAW_COVID)️
   - 06/09/2020 [🚕⛑ Contar taxis y el desembardo de Normandia / Counting on taxis and the Battle of Normandy](...)️
 
 <!-- tocstop -->
@@ -166,5 +166,20 @@ Javier Álvarez Liébana (@DadosDeLaplace)
 *Teorema central del límite: media de 2-5-10-20-50 variables aleatorias de Poisson*
 
 ***
+
+### [11/10/2020 📊🗳 Ley de Benford / Benford's Law](https://github.com/dadosdelaplace/hilostwitter/tree/main/plots/%23matesendomingo/2020_10_11_BENFORD_LAW_COVID)
+
+[🧶 HILO EN TWITTER / TWITTER THREAD](https://twitter.com/DadosdeLaplace/status/1315224410165444608)
+[📸 INFOGRAFÍA EN INSTAGRAM / CONTRIBUTION ON INSTAGRAM](https://www.instagram.com/p/CHF5SW3lwpl/)
+
+![](https://github.com/dadosdelaplace/hilostwitter/blob/main/plots/%23matesendomingo/2020_10_11_BENFORD_LAW_COVID/fig1.png)
+*Ley de Benford: distribución de frecuencias del primer dígito en páginas aleatorias de libros*
+
+![](https://github.com/dadosdelaplace/hilostwitter/blob/main/plots/%23matesendomingo/2020_10_11_BENFORD_LAW_COVID/fig2.png)
+*Ley de Benford: distribución de frecuencias del primer dígito de los casos diarios covid en cada provincia*
+
+***
+
+
 
 
