@@ -37,7 +37,7 @@ GPLv3](https://img.shields.io/badge/license-GPLv3-blue.svg)](https://www.gnu.org
 💰 Todo el contenido es libre y gratuito siendo citado (all content is free but well cited is required).
 
 <details>
-  <summary>Contribuciones de #MatesEnDomingo en orden cronológico (haz CLICK PARA ABRIR) / Contributions to #MatesEnDomingo (click to expand)</summary>
+  <summary>Contribuciones en <strong>TWITTER de los hilos de #MatesEnDomingo (CLICK PARA ABRIR)</strong> / Contributions to #MatesEnDomingo (click to expand)</summary>
   
 <!-- toc -->
 * **#MatesEnDomingo 2021**
@@ -52,7 +52,7 @@ GPLv3](https://img.shields.io/badge/license-GPLv3-blue.svg)](https://www.gnu.org
 </details>
 
 <details>
-  <summary>Otras contribuciones en orden cronológico (haz CLICK PARA ABRIR) / Other contributions (click to expand)</summary>
+  <summary>Otros <strong>hilos de TWITTER (CLICK PARA ABRIR)</strong> / Other contributions (click to expand)</summary>
   
 <!-- toc -->
 * **Contribuciones (contributions) 2021**
@@ -62,7 +62,7 @@ GPLv3](https://img.shields.io/badge/license-GPLv3-blue.svg)](https://www.gnu.org
 
 
 <details>
-  <summary>Divulgación en Instagram (haz CLICK PARA ABRIR) / Contributions on Instagram (click to expand)</summary>
+  <summary>Divulgación en <strong>INSTAGRAM (CLICK PARA ABRIR)</strong> / Contributions on Instagram (click to expand)</summary>
   
 <!-- toc -->
 * **Contribuciones (contributions) 2021**
