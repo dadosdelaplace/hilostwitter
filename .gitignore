@@ -8,7 +8,10 @@
 .Ruserdata
 
 # RStudio files
-.Rproj.user/
+.Rproj.user
+
+# DS_store files
+.DS_Store
 
 # produced files
 *.pdf
