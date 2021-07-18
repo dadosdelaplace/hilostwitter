@@ -8,7 +8,7 @@ Códigos R de los hilos de Twitter (R codes of Twitter threads)
 
 [![License:
 GPLv3](https://img.shields.io/badge/license-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
-[![lifecycle](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
+[![lifecycle](https://img.shields.io/badge/lifecycle-stable-green.svg)](https://www.tidyverse.org/lifecycle/#stable)
 [![CRAN\_Status\_Badge](http://www.r-pkg.org/badges/version/icon)](https://cran.r-project.org/package=icons)
 <a href="https://github.com/dadosdelaplace/hilostwitter/graphs/contributors" alt="Contributors"> <img src="https://img.shields.io/github/contributors/dadosdelaplace/hilostwitter" /></a>
 <a href="https://github.com/dadosdelaplace/hilostwitter/pulse" alt="Activity"> <img src="https://img.shields.io/github/commit-activity/m/dadosdelaplace/hilostwitter" /></a>
@@ -19,7 +19,8 @@ GPLv3](https://img.shields.io/badge/license-GPLv3-blue.svg)](https://www.gnu.org
             alt="chat on Discord"></a> --->
 
 
-
+<div align="center">
+            
 ### ✨ Algunas redes donde puedes encontrarme (social networks where you can follow me) :man_technologist:👀👇🏻
  
 <a href="https://twitter.com/dadosdelaplace"><img border="0" alt="Twitter" src="https://assets.dryicons.com/uploads/icon/svg/8385/c23f7ffc-ca8d-4246-8978-ce9f6d5bcc99.svg" width="40" height="40"></a>
@@ -27,6 +28,7 @@ GPLv3](https://img.shields.io/badge/license-GPLv3-blue.svg)](https://www.gnu.org
 <a href="https://t.me/dadosdelaplace"><img border="0" alt="Telegram" src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/83/Telegram_2019_Logo.svg/1024px-Telegram_2019_Logo.svg.png" width="40" height="40"></a>
 <a href="mailto:alvarezljavier@uniovi.es"><img border="0" alt="Email" src="https://assets.dryicons.com/uploads/icon/svg/8007/c804652c-fae4-43d7-b539-187d6a408254.svg" width="40" height="40"></a>
 </div>
+
 
 **Códigos realizados en R** que complementan los hilos de divulgación estadística y de visualización de datos en [Twitter (@DadosDeLaplace)](https://twitter.com/dadosdelaplace) y los hilos de [#MatesEnDomingo](https://twitter.com/i/events/1398580673221378049), principalmente realizados con los paquetes de [`{dplyr}`](https://github.com/rstudio/cheatsheets/blob/master/data-transformation.pdf), [`{ggplot2}`](https://github.com/rstudio/cheatsheets/blob/master/data-visualization-2.1.pdf), [`{lubridate}`](https://rawgit.com/rstudio/cheatsheets/master/lubridate.pdf), [`{plotly}`](https://plotly.com/r/) y [`{tidyr}`](https://github.com/rstudio/cheatsheets/blob/master/data-import.pdf), así como otros paquetes, principalmente del entorno [`{tidyverse}`](https://www.tidyverse.org/packages/). También podrás encontrar algunos códigos que complementan la divulgación realizada en [Instagram](instagram.com/javieralvarezliebana).
 
