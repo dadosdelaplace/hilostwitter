@@ -1,0 +1,262 @@
+---
+title: "Benford's Law (COVID)"
+author: "Javier Álvarez Liébana"
+date: "11th of October 2020"
+output:
+  html_document:
+    theme: paper
+    highlight: kate
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r ajustes, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, fig.showtext = T, fig.retina = 1)
+```
+
+```{r preparacion, message = FALSE}
+rm(list = ls()) # borramos entorno
+# setwd(dirname(rstudioapi::getSourceEditorContext()$path)) # fijamos directorio
+# Instalamos paquetes necesarios
+repos <- "http://cran.us.r-project.org"
+if(!require(ggplot2)) install.packages("ggplot2", repos = repos)
+if(!require(latex2exp)) install.packages("latex2exp", repos = repos)
+if(!require(tidyverse)) install.packages("tidyverse", repos = repos)
+if(!require(lubridate)) install.packages("lubridate", repos = repos)
+if(!require(ggthemes)) install.packages("ggthemes", repos = repos)
+if(!require(colorspace)) install.packages("colorspace", repos = repos)
+if(!require(calendR)) install.packages("calendR", repos = repos)
+if(!require(patchwork)) install.packages("patchwork", repos = repos)
+if(!require(here)) install.packages("here", repos = repos)
+if(!require(glue)) install.packages("glue", repos = repos)
+if(!require(pdftools)) install.packages("pdftools", repos = repos)
+if(!require(plotly)) install.packages("plotly", repos = repos)
+if(!require(RColorBrewer)) install.packages("RColorBrewer", repos = repos)
+if(!require(stats)) install.packages("stats", repos = repos)
+if(!require(utils)) install.packages("utils", repos = repos)
+if(!require(av)) install.packages("av", repos = repos)
+if(!require(benford.analysis)) install.packages("benford.analysis",
+                                                repos = repos)
+options("scipen" = 10)
+```
+
+```{r tema-base-fuentes-plots}
+library(showtext)
+# Fuentes para los gráficos
+font_add_google("Roboto Mono", "Roboto Mono")
+font_add_google("Open Sans", "Open Sans")
+font_add_google("Bangers", "Bangers")
+showtext_auto()
+
+# Tema base
+theme_set(theme_minimal(base_family = "Bangers"))
+theme_update(
+  # Fuentes de los textos
+  text = element_text(size = 15),
+  plot.caption = element_text(size = 15, color = "white",
+                              family = "Roboto Mono"),
+  # Fuentes y ajustes de los ejes
+  axis.text.x = element_text(size = 15, color = "white",
+                             family = "Bangers"),
+  axis.text.y = element_text(size = 15, color = "white",
+                             family = "Bangers"),
+  axis.title = element_text(size = 19, family = "Bangers",
+                            color = "white"),
+  axis.ticks = element_blank(),
+  # Ajustes del grid
+  plot.background = element_rect(fill = "#3c2554", color = "#3c2554"),
+  panel.background = element_rect(fill = NA, color = NA),
+  panel.border = element_rect(fill = NA, color = NA),
+  panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+  # Márgenes
+  plot.margin = # márgenes
+    margin(t = 0.3, b = 0.3, r = 0.7, l = 0.7, "cm"))
+```
+
+```{r carga-datos}
+# Datos de casos por provincias del ISCIII
+url_isciii_prov <-
+  paste0("https://raw.githubusercontent.com/dadosdelaplace/hilostwitter/",
+         "main/R/%23matesendomingo/2020_10_11_BENFORD_LAW_COVID/",
+         "datos_ISCIII.csv")
+datos <- read.csv(url_isciii_prov)
+```
+
+```{r test-benford}
+# Comprobar si los datos sigue la ley de Benford
+resultados_benford <- benford(datos$num_casos[datos$num_casos > 0],
+                              number.of.digits = 1, sign = "positive")
+
+# Distribución de probabilidad y de frecuencias de los
+# primeros dígitos de los datos
+prob_empiricas <- resultados_benford$bfd$data.dist
+frec_empiricas <- resultados_benford$bfd$data.dist.freq
+
+# Distribución de probabilidad y de frecuencias de los
+# primeros dígitos teóricos según Benford
+prob_teoricas <- resultados_benford$bfd$benford.dist
+frec_teoricas <- resultados_benford$bfd$benford.dist.freq
+
+# Data.frame
+benford_covid <- data.frame("digitos" = as.factor(1:9), 
+                            "prob_empiricas" = prob_empiricas,
+                            "frec_empiricas" = frec_empiricas,
+                            "prob_teoricas" = prob_teoricas,
+                            "frec_teoricas" = frec_teoricas)
+
+# Distribución de probabilidad de los primeros dígitos
+# de páginas de libros elegidos por los seguidores de Instagram
+# al azar (cada uno introdujo 10 páginas al azar de libros)
+prob_empiricas_libros <- c(0.3077, 0.1832, 0.1286, 0.0878, 0.0709,
+                            0.0633, 0.0582, 0.0546, 0.0459)
+
+# Data.frame
+benford_libros <- data.frame("digitos" = as.factor(1:9),
+                             "prob_empiricas" = prob_empiricas_libros,
+                             "prob_teoricas" = prob_teoricas)
+
+```
+
+
+```{r fig1, fig.width = 13, fig.height = 8}
+# Benford con los libros
+fig1 <-
+  ggplot(benford_libros,
+         aes(x = digitos, y = prob_empiricas)) +
+  geom_col(fill = "#f9e556") +
+  geom_segment(aes(x = as.numeric(as.character(digitos)) - 0.5,
+                   xend = as.numeric(as.character(digitos)) + 0.5,
+                   y = prob_teoricas, yend = prob_teoricas),
+               color = "white", size = 3) +
+  coord_cartesian(clip = "off") +
+  scale_y_continuous(breaks = c(0, 0.1, 0.2, 0.3, 0.4, 0.5),
+                     labels = scales::label_percent(suffix = "%")) +
+  # Textos asociados a cada barra empírica
+  geom_text(aes(x = digitos, y = prob_empiricas + 0.021,
+                label = paste0(round(100 * prob_empiricas, 2), "%")),
+            color = "#f9e556", show.legend = FALSE, size = 8,
+            family = "Roboto Mono", fontface = "bold") +
+   # Textos asociados a cada barra teórica (solo las 3 primeras)
+  geom_text(data = benford_libros %>%
+              filter(as.numeric(as.character(digitos)) <= 3),
+            aes(x = as.numeric(as.character(digitos)) + 0.55,
+                y = prob_teoricas,
+                label = paste0("Según Benford: ",
+                               round(100 * prob_teoricas, 2), "%")),
+            color = "white", show.legend = FALSE, size = 4,
+            family = "Roboto Mono", hjust = "left") +
+  # Título
+  annotate("text", x = 4, y = 0.33, label = "Ley de Benford",
+           family = "Bangers", color = "#f9e556",
+           size = 35, hjust = "left") +
+  # Subtítulo
+  annotate("text", x = 4, y = 0.27,
+           label = paste0("Gráfico: Javier Álvarez Liébana (@DadosDeLaplace)"),
+           family = "Bangers", fontface = "bold", lineheight = .99,
+           color = "white", size = 7, hjust = "left") +
+  # Datos
+  annotate("text", x = 0.5, y = 0.39,
+           label = paste0("Páginas aleatorias de libros"),
+           family = "Bangers", color = "white",
+           size = 11, hjust = "left") +
+  # Descripción
+  annotate("text", x = 5.5, y = 0.17,
+           label =
+             paste0("La Ley de Benford es una ley empírica de\n",
+                    "probabilidad, propuesta por Frank Benford,\n",
+                    "que postula que, en muchos conjuntos,\n",
+                    "el primer dígito es 1 con mayor frecuencia\n",
+                    "que el resto, el 2 es más frecuente que\n",
+                    "todos salvo el 1, el 3 es más frecuente\n",
+                    "que el 4-9, y así logarítmicamente"),
+           family = "Roboto Mono", fontface = "bold", lineheight = .99,
+           color = "#f9e556", size = 5, hjust = "left") +
+  labs(caption = paste0("Datos: primer dígito de las páginas de ",
+                        "los libros de seguidores de Instagram"),
+       x = "Dígitos del 1 al 9", y = "Proporción") +
+  theme(legend.box.spacing =  unit(2.7, "cm"))
+fig1
+
+# Exportamos
+ruta <- here("plots", "#matesendomingo",
+             "2020_10_11_BENFORD_LAW_COVID", "fig1")
+ggsave(glue("{ruta}.pdf"),
+       width = 13, height = 8, device = cairo_pdf)
+pdftools::pdf_convert(glue("{ruta}.pdf"), filenames = glue("{ruta}.png"),
+                      format = "png", dpi = 300)
+```
+
+
+```{r fig2, fig.width = 13, fig.height = 8}
+# Benford con el covid
+fig2 <-
+  ggplot(benford_covid,
+         aes(x = digitos, y = prob_empiricas)) +
+  geom_col(fill = "#f9e556") +
+  geom_segment(aes(x = as.numeric(as.character(digitos)) - 0.5,
+                   xend = as.numeric(as.character(digitos)) + 0.5,
+                   y = prob_teoricas, yend = prob_teoricas),
+               color = "white", size = 3) +
+  coord_cartesian(clip = "off") +
+  scale_y_continuous(breaks = c(0, 0.1, 0.2, 0.3, 0.4, 0.5),
+                     labels = scales::label_percent(suffix = "%")) +
+  # Textos asociados a cada barra empírica
+  geom_text(aes(x = digitos, y = prob_empiricas + 0.02,
+                label = paste0(round(100 * prob_empiricas, 2), "%")),
+            color = "#f9e556", show.legend = FALSE, size = 8,
+            family = "Roboto Mono", fontface = "bold") +
+   # Textos asociados a cada barra teórica (solo las 2 primeras)
+  geom_text(data = benford_covid %>%
+              filter(as.numeric(as.character(digitos)) <= 2),
+            aes(x = as.numeric(as.character(digitos)) + 0.55,
+                y = prob_teoricas,
+                label = paste0("Según Benford: ",
+                               round(100 * prob_teoricas, 2), "%")),
+            color = "white", show.legend = FALSE, size = 4,
+            family = "Roboto Mono", hjust = "left") +
+  # Título
+  annotate("text", x = 4, y = 0.33, label = "Ley de Benford",
+           family = "Bangers", color = "#f9e556",
+           size = 35, hjust = "left") +
+  # Subtítulo
+  annotate("text", x = 4, y = 0.27,
+           label = paste0("Gráfico: Javier Álvarez Liébana (@DadosDeLaplace)"),
+           family = "Bangers", fontface = "bold", lineheight = .99,
+           color = "white", size = 7, hjust = "left") +
+  # Datos
+  annotate("text", x = 0.5, y = 0.39,
+           label = paste0("Casos diarios covid por provincias"),
+           family = "Bangers", color = "white",
+           size = 11, hjust = "left") +
+  # Descripción
+  annotate("text", x = 5.5, y = 0.17,
+           label =
+             paste0("La Ley de Benford es una ley empírica de\n",
+                    "probabilidad, propuesta por Frank Benford,\n",
+                    "que postula que, en muchos conjuntos,\n",
+                    "el primer dígito es 1 con mayor frecuencia\n",
+                    "que el resto, el 2 es más frecuente que\n",
+                    "todos salvo el 1, el 3 es más frecuente\n",
+                    "que el 4-9, y así logarítmicamente"),
+           family = "Roboto Mono", fontface = "bold", lineheight = .99,
+           color = "#f9e556", size = 5, hjust = "left") +
+  labs(caption = paste0("Datos: primer dígito de las páginas de ",
+                        "los libros de seguidores de Instagram"),
+       x = "Dígitos del 1 al 9", y = "Proporción") +
+  theme(legend.box.spacing =  unit(2.7, "cm"))
+fig2
+
+# Exportamos
+ruta <- here("plots", "#matesendomingo",
+             "2020_10_11_BENFORD_LAW_COVID", "fig2")
+ggsave(glue("{ruta}.pdf"),
+       width = 13, height = 8, device = cairo_pdf)
+pdftools::pdf_convert(glue("{ruta}.pdf"), filenames = glue("{ruta}.png"),
+                      format = "png", dpi = 300)
+```
+
+***
+
+```{r sesion}
+sessionInfo()
+```
