@@ -66,7 +66,7 @@ GPLv3](https://img.shields.io/badge/license-GPLv3-blue.svg)](https://www.gnu.org
   
 <!-- toc -->
 * **Contribuciones (contributions) 2021**
-  - 22/06/2021 [👨🏻‍🏫📚 Probabilidad de aprobar las oposiciones / Probability of passing competition exams](https://github.com/dadosdelaplace/hilostwitter/tree/main/plots/%23matesendomingo/2021_06_22_PASSING_EXAMS)️
+  - 22/06/2021 [👨🏻‍🏫📚 Probabilidad de aprobar las oposiciones / Probability of passing competition exams](https://github.com/dadosdelaplace/hilostwitter/tree/main/plots/Instagram/2021_06_22_PASSING_EXAMS)️
 <!-- tocstop -->
 </details>
 
@@ -96,7 +96,7 @@ GPLv3](https://img.shields.io/badge/license-GPLv3-blue.svg)](https://www.gnu.org
 
 ***
 
-###  [22/06/2021 👨🏻‍🏫📚 Probabilidad de aprobar las oposiciones / Probability of passing competition exams](https://github.com/dadosdelaplace/hilostwitter/tree/main/plots/%23matesendomingo/2021_06_22_PASSING_EXAMS)
+###  [22/06/2021 👨🏻‍🏫📚 Probabilidad de aprobar las oposiciones / Probability of passing competition exams](https://github.com/dadosdelaplace/hilostwitter/tree/main/plots/Instagram/2021_06_22_PASSING_EXAMS)
 
 [📸 INFOGRAFÍA EN INSTAGRAM / CONTRIBUTION ON INSTAGRAM](https://www.instagram.com/javieralvarezliebana/)
 
@@ -180,6 +180,7 @@ GPLv3](https://img.shields.io/badge/license-GPLv3-blue.svg)](https://www.gnu.org
 
 ![](https://github.com/dadosdelaplace/hilostwitter/blob/main/plots/%23matesendomingo/2020_10_11_BENFORD_LAW_COVID/fig2.png)
 *Ley de Benford: distribución de frecuencias del primer dígito de los casos diarios covid en cada provincia*
+
 
 ***
 
