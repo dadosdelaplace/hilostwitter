@@ -1,0 +1,422 @@
+---
+title: "codigoR_temp_AEMET"
+author: "Javier Álvarez Liébana"
+date: "30th of June 2020"
+output:
+  html_document:
+    theme: paper
+    highlight: kate
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r ajustes, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, fig.showtext = T, fig.retina = 1)
+```
+
+```{r preparacion, message = FALSE}
+rm(list = ls()) # borramos entorno
+# setwd(dirname(rstudioapi::getSourceEditorContext()$path)) # fijamos directorio
+# Instalamos paquetes necesarios
+repos <- "http://cran.us.r-project.org"
+if(!require(ggplot2)) install.packages("ggplot2", repos = repos)
+if(!require(latex2exp)) install.packages("latex2exp", repos = repos)
+if(!require(tidyverse)) install.packages("tidyverse", repos = repos)
+if(!require(purrr)) install.packages("purrr", repos = repos)
+if(!require(lubridate)) install.packages("lubridate", repos = repos)
+if(!require(ggthemes)) install.packages("ggthemes", repos = repos)
+if(!require(colorspace)) install.packages("colorspace", repos = repos)
+if(!require(patchwork)) install.packages("patchwork", repos = repos)
+if(!require(here)) install.packages("here", repos = repos)
+if(!require(glue)) install.packages("glue", repos = repos)
+if(!require(pdftools)) install.packages("pdftools", repos = repos)
+if(!require(plotly)) install.packages("plotly", repos = repos)
+if(!require(RColorBrewer)) install.packages("RColorBrewer", repos = repos)
+if(!require(climaemet)) install.packages("climaemet", repos = repos)
+if(!require(scico)) install.packages("scico", repos = repos)
+if(!require(rcartocolor)) install.packages("rcartocolor", repos = repos)
+options("scipen" = 10)
+```
+
+```{r tema-base-fuentes-plots}
+# Fuentes para los gráficos
+library(showtext)
+font_add_google("Lobster Two", "lobstertwo")
+font_add_google("Poppins", "poppins")
+showtext_auto()
+
+# Tema base
+theme_set(theme_bw())
+theme_update(
+  legend.position = "top", # posición leyenda
+  # Fuentes y ajustes de la leyenda 
+  legend.text = element_text(size = 11, family = "poppins"),
+  legend.title = element_text(face = "bold", size = 13,
+                              family = "poppins"),
+  # Fuentes de los textos
+  text = element_text(family = "poppins", size = 11, color = "black"),
+  # Fuentes y ajustes de título, subtítulo y caption
+  plot.title = element_text(family = "poppins", size = 23,
+                            face = "bold", color = "#2a475e"),
+  plot.subtitle = element_text(family = "poppins", size = 11,
+                               face = "bold", color = "black"),
+  plot.caption = element_text(size = 11, family = "poppins"),
+  # Fuentes y ajustes de los ejes
+  axis.text = element_text(size = 11, color = "grey50",
+                           family = "poppins"),
+  axis.title = element_text(size = 15, family = "poppins"),
+  axis.ticks = element_blank(), axis.line = element_line(colour = "grey50"),
+  # Ajustes del grid
+  rect = element_blank(), panel.grid = element_line(color = "#b4aea9"),
+  panel.grid.minor = element_blank(),
+  panel.grid.major.x = element_blank(),
+  panel.grid.major.y = element_line(linetype = "dashed"),
+  plot.background =
+    element_rect(fill = "#fbf9f4", color = "#fbf9f4"),
+  # Márgenes
+  plot.margin = # márgenes
+    margin(t = 0.5, b = 0.5, r = 0.9, l = 0.9, "cm"))
+```
+
+
+```{r carga-datos_aemet}
+# Acceso a datos del AEMET: necesitamos una key para la API
+apikey <- paste0("eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhbHZhcmV6bGphdmll",
+                 "ckB1bmlvdmkuZXMiLCJqdGkiOiJjYmFlZDczYy1lYmU0LTQ0OW",
+                 "EtYmQ1OC03NTI1YWE3NjQ0ZDIiLCJpc3MiOiJBRU1FVCIsImlhd",
+                 "CI6MTYyNTA0ODc0NCwidXNlcklkIjoiY2JhZWQ3M2MtZWJlNC00",
+                 "NDlhLWJkNTgtNzUyNWFhNzY0NGQyIiwicm9sZSI6IiJ9.IWjmNed",
+                 "uaFAD6YyUirJVBd79GzoRwcOPvGwfi8UY8mM")
+
+# Lista de estaciones del AEMET
+estaciones <- aemet_stations(apikey)
+
+# Ejemplos:
+#
+# ALICANTE-ELCHE AEROPUERTO --> id: "8019"
+# ASTURIAS AEROPUERTO --> id: "1212E"
+# BARCELONA AEROPUERTO BARCELONA --> id: "0076"
+# BILBAO AEROPUERTO --> id: "1082"
+# A CORUÑA AEROPUERTO --> id: "1387E"
+# GIJÓN, PUERTO --> id: "1208H"
+# GRANADA AEROPUERTO --> id: "5530E"
+# LEÓN AEROPUERTO --> id: "2661B"
+# MÁLAGA AEROPUERTO --> id: "6155A"
+# MADRID AEROPUERTO --> id: "3129"
+# MADRID, RETIRO --> id: "3195"
+# MURCIA --> id: "7178I"
+# OVIEDO --> id: "1249I"
+# PAMPLONA, AEROPUERTO --> id: "9263D"
+# SANTANDER AEROPUERTO CANTABRIA --> id: "1109"
+# SANTIAGO DE COMPOSTELA AEROPUERTO --> id: "1428"
+# SEVILLA AEROPUERTO --> id: "5783"
+# VALENCIA AEROPUERTO --> id: "8414A"
+# VITORIA GASTEIZ AEROPUERTO --> id: "9091R"
+# ZARAGOZA, AEROPUERTO --> id: "9434"
+
+# Extracción de datos de la estación del AEMET requerida
+#
+# station: código de la estación (station = "3129" para Madrid-Barajas)
+# apikey: clave para la api del Open Data del AEMET. Puedes solicitar
+#         una en https://opendata.aemet.es/centrodedescargas/obtencionAPIKey
+# start: año inicial // end: año final
+#
+# https://cran.r-project.org/web/packages/climaemet/readme/README.html
+
+# Ejemplo de extracción: Madrid aeropuerto
+# Sustituir ... en «station =...» por el código de tu estación
+# Tardará unos minutos ya que el AEMET tiene restricciones en el servidor
+# datos_diarios <-
+#   aemet_daily_period(station = "3129", apikey = apikey,
+#                      start = 1961, end = 2021)
+
+# # Guardamos los datos en nuestro ordenador en formato .RData
+# save(datos_diarios, file = "./datos_diarios_1961_2021.RData")
+
+# Si ya has ejecutado la llamada a los datos una vez, y los tienes
+# guardados (con el nombre del fichero .RData que hayas escrito)
+# load("./datos_diarios_1961_2021.RData")
+
+# Cargamos datos de Madrid, Barcelona, Valencia, Sevilla, Zaragoza,
+# Málaga, Murcia, Bilbao, Coruña, Gijón
+datos_aemet <- list()
+
+load("./datos_alicante_aeropuerto_1961_2021.RData")
+datos_aemet[[1]] <- datos_diarios
+
+load("./datos_barcelona_aeropuerto_1961_2021.RData")
+datos_aemet[[2]] <- datos_diarios
+
+load("./datos_bilbao_aeropuerto_1961_2021.RData")
+datos_aemet[[3]] <- datos_diarios
+
+load("./datos_gijon_aeropuerto_1961_2021.RData")
+datos_aemet[[4]] <- datos_diarios
+
+load("./datos_madrid_barajas_1961_2021.RData")
+datos_aemet[[5]] <- datos_diarios
+
+load("./datos_malaga_aeropuerto_1961_2021.RData")
+datos_aemet[[6]] <- datos_diarios
+
+load("./datos_sevilla_aeropuerto_1961_2021.RData")
+datos_aemet[[7]] <- datos_diarios
+
+load("./datos_valencia_aeropuerto_1961_2021.RData")
+datos_aemet[[8]] <- datos_diarios
+
+load("./datos_zaragoza_aeropuerto_1961_2021.RData")
+datos_aemet[[9]] <- datos_diarios
+
+names(datos_aemet) <-
+  c("alicante_aeropuerto", "barcelona_aeropuerto", "bilbao_aeropuerto",
+    "gijon_aeropuerto", "madrid_aeropuerto", "malaga_aeropuerto",
+    "sevilla_aeropuerto", "valencia_aeropuerto", "zaragoza_aeropuerto")
+```
+
+```{r preproc-datos}
+# Las temperaturas vienen en caracteres, convertimos a números
+datos_aemet <- datos_aemet %>%
+  map(mutate, tmin = as.numeric(gsub(",", ".", tmin)),
+      tmax = as.numeric(gsub(",", ".", tmax)),
+      tmed = as.numeric(gsub(",", ".", tmed)))
+
+# Añadimos etiquetas de fechas y décadas
+datos_aemet <- datos_aemet %>%
+  map(mutate, dia_anual = lubridate::yday(fecha),
+      mes = lubridate::month(fecha),
+      anno = lubridate::year(fecha), decada = anno %/% 10 * 10,
+      decada = if_else(decada == 2020, "2020–2021",
+                       paste0(decada, "–", decada + 9)),
+      quinquenio = anno %/% 5 * 5,
+      quinquenio = if_else(quinquenio == 2020, "2020–2021",
+                           paste0(quinquenio, "–", quinquenio + 4)))
+  
+# Estadísticas por años
+datos_aemet <- datos_aemet %>%
+  map(mutate, dia_tmax = fecha[which.max(tmax)],
+      dia_tmin = fecha[which.min(tmin)],
+      media_anno_tmax = mean(tmax, na.rm = TRUE),
+      media_anno_tmin = mean(tmin, na.rm = TRUE)) %>%
+  map(ungroup)
+
+# Estadísticas por quinquenios
+datos_aemet <- datos_aemet %>%
+  map(group_by, quinquenio) %>%
+  map(mutate, quinq_tmax = fecha[which.max(tmax)],
+      quinq_tmin = fecha[which.min(tmin)],
+      media_quinq_tmax = mean(tmax, na.rm = TRUE),
+      media_quinq_tmin = mean(tmin, na.rm = TRUE)) %>%
+  map(ungroup)
+
+# Estadísticas por meses
+datos_aemet <- datos_aemet %>%
+  map(group_by, mes) %>%
+  map(mutate, dia_mes_tmax = fecha[which.max(tmax)],
+      dia_mes_tmin = fecha[which.min(tmin)],
+      media_mes_tmax = mean(tmax, na.rm = TRUE),
+      media_mes_tmin = mean(tmin, na.rm = TRUE)) %>%
+  map(ungroup)
+# 
+# # Estadísticas por meses-años
+# datos_aemet <- datos_aemet %>%
+#   map(group_by, anno, mes) %>%
+#   map(mutate, dia_mes_anno_tmax = fecha[which.max(tmax)],
+#       dia_mes_anno_tmin = fecha[which.min(tmin)],
+#       media_mes_anno_tmax = mean(tmax, na.rm = TRUE),
+#       media_mes_anno_tmin = mean(tmin, na.rm = TRUE)) %>%
+#   map(ungroup)
+
+# Creamos diccionario de meses
+meses <- tibble(dia_anual = c(1, 32, 60, 91, 121, 152, 182,
+                              213, 244, 274, 305, 335),
+                mes = c("Ene", "Feb", "Mar", "Apbr", "May", "Jun",
+                        "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"))
+``` 
+
+```{r fig1, fig.width = 13, fig.height = 8}
+# Temperatura máxima Madrid
+fig1 <-
+  ggplot(datos_aemet$madrid_aeropuerto,
+         aes(dia_anual, tmax, color = anno)) +
+  geom_point(alpha = 0.5, size = 1) + coord_cartesian(clip = "off") +
+  scale_x_continuous(breaks = meses$dia_anual, labels = meses$mes,
+                     expand = c(.001, .001)) +
+  scale_y_continuous(labels = function(x) paste0(x, "°C"),
+                     breaks = seq(0, 70, by = 10)) +
+  scale_color_viridis_c(option = "turbo", direction = -1, name = NULL,
+                        breaks = c(1961, seq(1970, 2020, by = 10), 2021)) +
+  guides(color = guide_colorsteps(barwidth = unit(50, "lines"),
+                                  barheight = unit(0.5, "lines"))) +
+  labs(x = "Meses", y = "Temperatura máxima diaria (ºC)",
+       title = paste0("TEMPERATURAS MÁXIMAS DIARIAS EN MADRID-BARAJAS"),
+       subtitle =
+         paste0("Gráfico: Javier Álvarez Liébana (@DadosDeLaplace) | ",
+                "Inspirado en «Daily maximum temperatures in Portland ",
+                "from 1938–2021» (Cédric Scherer)"),
+       caption = "Datos: temperaturas extraídas del AEMET (Open Data API)") 
+fig1
+```
+
+```{r fig2, fig.width = 13, fig.height = 8}
+# Temperatura mínima Madrid
+fig2 <-
+  ggplot(datos_aemet$madrid_aeropuerto,
+         aes(dia_anual, tmin, color = anno)) +
+  geom_point(alpha = 0.5, size = 1) + coord_cartesian(clip = "off") +
+  scale_x_continuous(breaks = meses$dia_anual, labels = meses$mes,
+                     expand = c(.001, .001)) +
+  scale_y_continuous(labels = function(x) paste0(x, "°C"),
+                     breaks = seq(0, 70, by = 10)) +
+  scale_color_viridis_c(option = "turbo", direction = -1, name = NULL,
+                        breaks = c(1961, seq(1970, 2020, by = 10), 2021)) +
+  guides(color = guide_colorsteps(barwidth = unit(50, "lines"),
+                                  barheight = unit(0.5, "lines"))) +
+  labs(x = "Meses", y = "Temperatura mínima diaria (ºC)",
+       title = paste0("TEMPERATURAS MÍNIMAS DIARIAS EN MADRID-BARAJAS"),
+       subtitle =
+         paste0("Gráfico: Javier Álvarez Liébana (@DadosDeLaplace) | ",
+                "Inspirado en «Daily maximum temperatures in Portland ",
+                "from 1938–2021» (Cédric Scherer)"),
+       caption = "Datos: temperaturas extraídas del AEMET (Open Data API)") 
+fig2
+```
+
+```{r fig3, fig.width = 13, fig.height = 8}
+# Temperatura máxima
+fig3 <-
+  ggplot(datos_aemet$madrid_aeropuerto %>% filter(anno != 2021),
+         aes(dia_anual, tmax, color = anno)) +
+  geom_line(alpha = 0.5) +
+  geom_line(data = datos_aemet$madrid_aeropuerto %>%
+              filter(anno == 2021),
+            aes(dia_anual, tmax), alpha = 0.7, size = 1.3,
+            color = "black") +
+  coord_cartesian(clip = "off") +
+  scale_x_continuous(breaks = meses$dia_anual, labels = meses$mes,
+                     expand = c(.001, .001)) +
+  scale_y_continuous(labels = function(x) paste0(x, "°C"),
+                     breaks = seq(0, 70, by = 10)) +
+  guides(color = guide_colorsteps(barwidth = unit(40, "lines"),
+                                  barheight = unit(0.5, "lines"))) +
+  labs(x = "Meses", y = "Temperatura máxima diaria (ºC)",
+       title =
+         paste0("TEMPERATURAS MÁXIMAS DIARIAS EN MADRID-BARAJAS"),
+       subtitle =
+         paste0("Gráfico: Javier Álvarez Liébana (@DadosDeLaplace) | ",
+                "Inspirado en «Daily maximum temperatures in Portland ",
+                "from 1938–2021» (Cédric Scherer)"),
+       caption = "Datos: temperaturas extraídas del AEMET (Open Data API)") +
+  scale_color_carto_c(palette = "Sunset", name = NULL,
+                             breaks = seq(1960, 2020, by = 10))
+fig3
+```
+
+```{r fig4, fig.width = 13, fig.height = 8}
+# Temperatura mínima
+fig4 <-
+  ggplot(datos_aemet$madrid_aeropuerto %>% filter(anno != 2021),
+         aes(dia_anual, tmin, color = anno)) +
+  geom_line(alpha = 0.5) +
+  geom_line(data = datos_aemet$madrid_aeropuerto %>%
+              filter(anno == 2021),
+            aes(dia_anual, tmin), alpha = 0.7, size = 1.3,
+            color = "black") +
+  coord_cartesian(clip = "off") +
+  scale_x_continuous(breaks = meses$dia_anual, labels = meses$mes,
+                     expand = c(.001, .001)) +
+  scale_y_continuous(labels = function(x) paste0(x, "°C"),
+                     breaks = seq(0, 70, by = 10)) +
+  guides(color = guide_colorsteps(barwidth = unit(40, "lines"),
+                                  barheight = unit(0.5, "lines"))) +
+  labs(x = "Meses", y = "Temperatura mínima diaria (ºC)",
+       title =
+         paste0("TEMPERATURAS MÍNIMAS DIARIAS EN MADRID-BARAJAS"),
+       subtitle =
+         paste0("Gráfico: Javier Álvarez Liébana (@DadosDeLaplace) | ",
+                "Inspirado en «Daily maximum temperatures in Portland ",
+                "from 1938–2021» (Cédric Scherer)"),
+       caption = "Datos: temperaturas extraídas del AEMET (Open Data API)") +
+  scale_color_carto_c(palette = "Sunset", name = NULL,
+                      breaks = seq(1960, 2020, by = 10))
+fig4
+```
+
+```{r layout-radar}
+# Reajustamos el layout
+theme_update(legend.text = element_text(size = 11, color = "grey50",
+                                        family = "poppins"),
+             legend.title = element_text(face = "bold", size = 15,
+                                         color = "grey20",
+                                         family = "poppins"),
+             text = element_text(family = "poppins", size = 11,
+                                 color = "black"),
+             plot.title = element_text(family = "poppins", size = 19,
+                                       face = "bold", color = "#2a475e"),
+             plot.subtitle = element_text(family = "poppins", size = 9, 
+                                          face = "bold", color = "black"),
+             plot.caption = element_text(size = 9, family = "poppins"),
+             axis.text = element_text(size = 11, color = "grey50",
+                                      family = "poppins"),
+             axis.title = element_text(size = 11, family = "poppins"),
+             plot.margin = # márgenes
+               margin(t = 0.3, b = 0.3, r = 0.5, l = 0.5, "cm"))
+
+```
+
+```{r fig5, fig.width = 13, fig.height = 8}
+# Gráfico de radar: máximas
+fig5 <-
+  ggplot(datos_aemet$madrid_aeropuerto, aes(dia_anual, tmin, color = anno)) +
+  geom_point(alpha = 0.3, size = 1.3) +
+  coord_polar(clip = "off") +
+  scale_x_continuous(breaks = meses$dia_anual, labels = meses$mes,
+                     expand = c(.001, .001)) +
+  scale_y_continuous(labels = function(x) paste0(x, "°C"),
+                     breaks = seq(40, -20, by = -10),
+                     limits = c(-20, 40)) +
+  guides(color = guide_colorsteps(barwidth = unit(15, "lines"),
+                                  barheight = unit(0.3, "lines"))) +
+  labs(x = "Meses", y = "Temperatura mínima diaria (ºC)",
+       title = paste0("TEMPERATURAS MÍNIMAS EN MADRID-BARAJAS"),
+       subtitle =
+         paste0("Gráfico: Javier Álvarez Liébana (@DadosDeLaplace)\n",
+                "Inspirado en «Daily maximum temperatures in Portland ",
+                "from 1938–2021» (Cédric Scherer)"),
+       caption = "Datos: temperaturas extraídas del AEMET (Open Data API)") +
+  scale_color_viridis_c(option = "turbo", direction = -1, name = NULL,
+                        breaks = c(1961, seq(1970, 2020, by = 10), 2021))
+fig5
+```
+
+```{r fig6, fig.width = 13, fig.height = 8}
+# radar máximas
+fig6 <-
+  ggplot(datos_aemet$madrid_aeropuerto, aes(dia_anual, tmax, color = anno)) +
+  geom_point(alpha = 0.3, size = 1.3) +
+  coord_polar(clip = "off") +
+  scale_x_continuous(breaks = meses$dia_anual, labels = meses$mes,
+                     expand = c(.001, .001)) +
+  scale_y_continuous(labels = function(x) paste0(x, "°C"),
+                     breaks = seq(50, -10, by = -10),
+                     limits = c(-10, 50)) +
+  guides(color = guide_colorsteps(barwidth = unit(15, "lines"),
+                                  barheight = unit(0.3, "lines"))) +
+  labs(x = "Meses", y = "Temperatura máxima diaria (ºC)",
+       title = paste0("TEMPERATURAS MÁXIMAS EN MADRID-BARAJAS"),
+       subtitle =
+         paste0("Gráfico: Javier Álvarez Liébana (@DadosDeLaplace)\n",
+                "Inspirado en «Daily maximum temperatures in Portland ",
+                "from 1938–2021» (Cédric Scherer)"),
+       caption = "Datos: temperaturas extraídas del AEMET (Open Data API)") +
+  scale_color_viridis_c(option = "turbo", direction = -1, name = NULL,
+                        breaks = c(1961, seq(1970, 2020, by = 10), 2021))
+fig6
+```
+
+
+***
+
+```{r sesion}
+sessionInfo()
+```
