@@ -87,6 +87,9 @@ GPLv3](https://img.shields.io/badge/license-GPLv3-blue.svg)](https://www.gnu.org
 
 [🧶 HILO EN TWITTER / TWITTER THREAD](https://twitter.com/DadosdeLaplace/status/1409178160860733443)
 
+![](https://github.com/dadosdelaplace/hilostwitter/blob/main/plots/%23matesendomingo/2021_07_27_DRAFT_LOTTERY_VIETNAM/fig12.png)
+*Gráfico de rating, que compara las papeletas de cada mes con el resto pero también con su media mensual: los que estén por encima de 195 fueron reclutados (el tamaño de los puntos depende de la media del número de papeleta de dicho mes)*
+
 ![](https://github.com/dadosdelaplace/hilostwitter/blob/main/plots/%23matesendomingo/2021_07_27_DRAFT_LOTTERY_VIETNAM/fig3.png)
 *Gráfico de puntos (scatter) + línea horizontal + líneas verticales (para visualizar mejor la desproporción por mes): meses en el eje x, número de la papeleta asociada a cada día del mes en el eje y*
 
