@@ -8,8 +8,17 @@ Códigos R de los hilos de Twitter (R codes of Twitter threads)
 
 [![License:
 GPLv3](https://img.shields.io/badge/license-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
+[![lifecycle](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
+[![CRAN\_Status\_Badge](http://www.r-pkg.org/badges/version/icon)](https://cran.r-project.org/package=icons)
+<a href="https://github.com/dadosdelaplace/hilostwitter/graphs/contributors" alt="Contributors"> <img src="https://img.shields.io/github/contributors/dadosdelaplace/hilostwitter" /></a>
+<a href="https://github.com/dadosdelaplace/hilostwitter/pulse" alt="Activity"> <img src="https://img.shields.io/github/commit-activity/m/dadosdelaplace/hilostwitter" /></a>
+<a href="https://twitter.com/intent/follow?screen_name=dadosdelaplace"> <img src="https://img.shields.io/twitter/follow/dadosdelaplace?style=social&logo=twitter"
+            alt="Sígueme en Twitter (follow on Twitter)"></a>
+<!-- <a href="https://discord.gg/HjJCwm5">
+        <img src="https://img.shields.io/discord/308323056592486420?logo=discord"
+            alt="chat on Discord"></a> --->
 
-<div align="center">
+
 
 ### ✨ Algunas redes donde puedes encontrarme (social networks where you can follow me) :man_technologist:👀👇🏻
  
