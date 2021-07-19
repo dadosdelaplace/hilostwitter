@@ -67,6 +67,7 @@ GPLv3](https://img.shields.io/badge/license-GPLv3-blue.svg)](https://www.gnu.org
   
 <!-- toc -->
 * **Contribuciones (contributions) 2021**
+  - 30/06/2021 [🌡 Evolución de las temperaturas máximas (1960-2021) en diferentes capitales de provincia / Daily max temperatures (1960-2021) of some Spanish cities](https://github.com/dadosdelaplace/hilostwitter/tree/main/R/others/2021_06_30_TEMP_AEMET) 
   - 17/06/2021 [📊🦖 Cuarteto de Anscombe / Anscombe's quartet](https://github.com/dadosdelaplace/hilostwitter/tree/main/plots/%23matesendomingo/2021_06_17_CUARTETO_ANSCOMBE)️
 <!-- tocstop -->
 </details>
@@ -82,6 +83,29 @@ GPLv3](https://img.shields.io/badge/license-GPLv3-blue.svg)](https://www.gnu.org
 </details>
 
 ***
+
+###  [30/06/2021 🌡 Evolución de las temperaturas máximas (1960-2021) en diferentes capitales de provincia / Daily max temperatures (1960-2021) of some Spanish cities](https://github.com/dadosdelaplace/hilostwitter/tree/main/R/others/2021_06_30_TEMP_AEMET)
+
+[🧶 HILO EN TWITTER / TWITTER THREAD](https://twitter.com/DadosdeLaplace/status/1410255510629228554)
+
+:warning: **IMPORTANTE**: solo se muestran las gráficas de Madrid pero en el [código R](https://github.com/dadosdelaplace/hilostwitter/tree/main/R/others/2021_06_30_TEMP_AEMET) se explica como replicarlo con cualquier estación AEMET de España.
+
+![](https://github.com/dadosdelaplace/hilostwitter/blob/main/plots/others/2021_06_30_TEMP_AEMET/fig7.png)
+*Distribución de las temperaturas máximas diarias (1960-2021) en la estación del AEMET Madrid-Barajas*
+
+![](https://github.com/dadosdelaplace/hilostwitter/blob/main/plots/others/2021_06_30_TEMP_AEMET/fig1.png)
+*Scatter plot con la evolución de las temperaturas máximas diarias (1960-2021) en la estación del AEMET Madrid-Barajas coloreadas por décadas*
+
+![](https://github.com/dadosdelaplace/hilostwitter/blob/main/plots/others/2021_06_30_TEMP_AEMET/fig2.png)
+*Scatter plot con la evolución de las temperaturas mínimas diarias (1960-2021) en la estación del AEMET Madrid-Barajas coloreadas por décadas*
+
+![](https://github.com/dadosdelaplace/hilostwitter/blob/main/plots/others/2021_06_30_TEMP_AEMET/fig3.png)
+*Gráfico de líneas con la evolución de las temperaturas máximas diarias (1960-2021) en la estación del AEMET Madrid-Barajas (2021 en negro)*
+
+![](https://github.com/dadosdelaplace/hilostwitter/blob/main/plots/others/2021_06_30_TEMP_AEMET/fig5.png)
+*Gráfico de radar de las temperaturas máximas diarias (1960-2021) en la estación del AEMET Madrid-Barajas*
+
+
 
 ###  [27/06/2021 🗳⛑ Sorteo de Vietnam de 1969 / Draft Lottery (Vietnam) of 1969](https://github.com/dadosdelaplace/hilostwitter/tree/main/plots/%23matesendomingo/2021_07_27_DRAFT_LOTTERY_VIETNAM)
 
