@@ -19,22 +19,23 @@ rm(list = ls()) # borramos entorno
 # setwd(dirname(rstudioapi::getSourceEditorContext()$path)) # fijamos directorio
 # Instalamos paquetes necesarios
 repos <- "http://cran.us.r-project.org"
-if(!require(ggplot2)) install.packages("ggplot2", repos = repos)
-if(!require(latex2exp)) install.packages("latex2exp", repos = repos)
 if(!require(tidyverse)) install.packages("tidyverse", repos = repos)
 if(!require(purrr)) install.packages("purrr", repos = repos)
 if(!require(lubridate)) install.packages("lubridate", repos = repos)
+if(!require(ggplot2)) install.packages("ggplot2", repos = repos)
+if(!require(latex2exp)) install.packages("latex2exp", repos = repos)
 if(!require(ggthemes)) install.packages("ggthemes", repos = repos)
 if(!require(colorspace)) install.packages("colorspace", repos = repos)
 if(!require(patchwork)) install.packages("patchwork", repos = repos)
 if(!require(here)) install.packages("here", repos = repos)
 if(!require(glue)) install.packages("glue", repos = repos)
 if(!require(pdftools)) install.packages("pdftools", repos = repos)
-if(!require(plotly)) install.packages("plotly", repos = repos)
 if(!require(RColorBrewer)) install.packages("RColorBrewer", repos = repos)
 if(!require(climaemet)) install.packages("climaemet", repos = repos)
 if(!require(scico)) install.packages("scico", repos = repos)
 if(!require(rcartocolor)) install.packages("rcartocolor", repos = repos)
+if(!require(tidybayes)) install.packages("tidybayes", repos = repos)
+if(!require(cowplot)) install.packages("cowplot", repos = repos)
 options("scipen" = 10)
 ```
 
@@ -77,7 +78,6 @@ theme_update(
   plot.margin = # márgenes
     margin(t = 0.5, b = 0.5, r = 0.9, l = 0.9, "cm"))
 ```
-
 
 ```{r carga-datos_aemet}
 # Acceso a datos del AEMET: necesitamos una key para la API
@@ -231,7 +231,11 @@ datos_aemet <- datos_aemet %>%
 meses <- tibble(dia_anual = c(1, 32, 60, 91, 121, 152, 182,
                               213, 244, 274, 305, 335),
                 mes = c("Ene", "Feb", "Mar", "Apbr", "May", "Jun",
-                        "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"))
+                        "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"),
+                nombre_meses = c("Enero", "Febrero", "Marzo", "Abril",
+                                 "Mayo", "Junio", "Julio", "Agosto",
+                                 "Septiembre", "Octubre", "Noviembre",
+                                 "Diciembre"))
 ``` 
 
 ```{r fig1, fig.width = 13, fig.height = 8}
@@ -254,8 +258,16 @@ fig1 <-
          paste0("Gráfico: Javier Álvarez Liébana (@DadosDeLaplace) | ",
                 "Inspirado en «Daily maximum temperatures in Portland ",
                 "from 1938–2021» (Cédric Scherer)"),
-       caption = "Datos: temperaturas extraídas del AEMET (Open Data API)") 
+       caption =
+         "Datos: temperaturas (1960-2021) extraídas del AEMET (Open Data API)") 
 fig1
+
+# Exportamos
+ruta <- here("plots", "others", "2021_06_30_TEMP_AEMET", "fig1")
+ggsave(glue("{ruta}.pdf"),
+       width = 13, height = 8, device = cairo_pdf)
+pdftools::pdf_convert(glue("{ruta}.pdf"), filenames = glue("{ruta}.png"),
+                      format = "png", dpi = 300)
 ```
 
 ```{r fig2, fig.width = 13, fig.height = 8}
@@ -278,8 +290,15 @@ fig2 <-
          paste0("Gráfico: Javier Álvarez Liébana (@DadosDeLaplace) | ",
                 "Inspirado en «Daily maximum temperatures in Portland ",
                 "from 1938–2021» (Cédric Scherer)"),
-       caption = "Datos: temperaturas extraídas del AEMET (Open Data API)") 
+       caption =
+         "Datos: temperaturas (1960-2021) extraídas del AEMET (Open Data API)") 
 fig2
+# Exportamos
+ruta <- here("plots", "others", "2021_06_30_TEMP_AEMET", "fig2")
+ggsave(glue("{ruta}.pdf"),
+       width = 13, height = 8, device = cairo_pdf)
+pdftools::pdf_convert(glue("{ruta}.pdf"), filenames = glue("{ruta}.png"),
+                      format = "png", dpi = 300)
 ```
 
 ```{r fig3, fig.width = 13, fig.height = 8}
@@ -306,10 +325,17 @@ fig3 <-
          paste0("Gráfico: Javier Álvarez Liébana (@DadosDeLaplace) | ",
                 "Inspirado en «Daily maximum temperatures in Portland ",
                 "from 1938–2021» (Cédric Scherer)"),
-       caption = "Datos: temperaturas extraídas del AEMET (Open Data API)") +
+       caption =
+         "Datos: temperaturas (1960-2021) extraídas del AEMET (Open Data API)") +
   scale_color_carto_c(palette = "Sunset", name = NULL,
                              breaks = seq(1960, 2020, by = 10))
 fig3
+# Exportamos
+ruta <- here("plots", "others", "2021_06_30_TEMP_AEMET", "fig3")
+ggsave(glue("{ruta}.pdf"),
+       width = 13, height = 8, device = cairo_pdf)
+pdftools::pdf_convert(glue("{ruta}.pdf"), filenames = glue("{ruta}.png"),
+                      format = "png", dpi = 300)
 ```
 
 ```{r fig4, fig.width = 13, fig.height = 8}
@@ -336,11 +362,75 @@ fig4 <-
          paste0("Gráfico: Javier Álvarez Liébana (@DadosDeLaplace) | ",
                 "Inspirado en «Daily maximum temperatures in Portland ",
                 "from 1938–2021» (Cédric Scherer)"),
-       caption = "Datos: temperaturas extraídas del AEMET (Open Data API)") +
+       caption =
+         "Datos: temperaturas (1960-2021) extraídas del AEMET (Open Data API)") +
   scale_color_carto_c(palette = "Sunset", name = NULL,
                       breaks = seq(1960, 2020, by = 10))
 fig4
+# Exportamos
+ruta <- here("plots", "others", "2021_06_30_TEMP_AEMET", "fig4")
+ggsave(glue("{ruta}.pdf"),
+       width = 13, height = 8, device = cairo_pdf)
+pdftools::pdf_convert(glue("{ruta}.pdf"), filenames = glue("{ruta}.png"),
+                      format = "png", dpi = 300)
 ```
+
+```{r fig7, fig.width = 13, fig.height = 8}
+# Imputamos media global a los NA
+datos_aemet$madrid_aeropuerto[is.na(datos_aemet$madrid_aeropuerto$tmax), ]$tmax <- mean(datos_aemet$madrid_aeropuerto$tmax, na.rm = TRUE)
+
+# boxplots con tendencia
+fig7 <-
+  ggplot(datos_aemet$madrid_aeropuerto, aes(tmax, as.factor(mes))) +
+  # Barras con percentiles 
+  stat_interval(.width = c(.1, .25, .5, .75, 0.9, 1),
+                height = 1, show.legend = FALSE, na.rm = TRUE) +
+  # Escala de colores de rojos/naranjas
+  rcartocolor::scale_color_carto_d(palette = "Peach") +
+  # Función de densidad al lado
+  stat_halfeye(aes(tmax, mes + 0.07), .width = 0, fill = "grey60",
+               alpha = 0.3, height = 0.7, size = 0.7,
+               point_alpha = 1, point_color = "#590000") +
+  # Invertimos para tener barras verticales
+  coord_flip(ylim = c(0.5, 13)) +
+  scale_x_continuous(expand = c(0.03, 0.03), limits = c(0, 45), 
+                       breaks = seq(0, 45, by = 5), 
+                       labels = glue::glue("{seq(0, 45, by = 5)}°C")) + 
+  scale_y_discrete(expand = c(0, 0), breaks = 1:12,
+                   labels = meses$nombre_meses) +
+  labs(x = "Meses", y = "Temperatura (ºC)",
+       title = paste0("TEMPERATURAS MÁXIMAS EN MADRID-BARAJAS"),
+       subtitle = "Gráfico: Javier Álvarez Liébana (@DadosDeLaplace)",
+       caption =
+         paste0("Datos: temperaturas (1960-2021) extraídas del AEMET ",
+                "(Open Data API) • Inspirado en «Daily temperatures in ",
+                "Berlin» (Cédric Scherer)"))
+
+# Leyenda que luego pegaremos
+texto_leyenda <-
+  tibble(x = c(6.6, 5.4, 4.2, 2.6, 1.25, 0.4, 9.7),
+         y = rep(1.02, 7),
+         texto = c("10%", "25%", "50%", "75%", "90%", "100%",
+                  "de las temperaturas caen en este rango"))
+objeto_leyenda <-
+  ggplot(data = tibble(x = 0:13, y = rep(1, 14)), aes(x, y)) + 
+  stat_interval(.width = c(.1, .25, .5, .75, .9, 1), show.legend = F) +
+  rcartocolor::scale_color_carto_d(palette = "Peach") +
+  coord_cartesian(ylim = c(0.9, 1.1)) +
+  geom_text(data = texto_leyenda, aes(x, y, label = texto),
+            color = "grey65", size = 3) +
+  theme_void()
+
+fig7 <- ggdraw(fig7) + draw_plot(objeto_leyenda, .275, .01, .525, .3)
+fig7
+# Exportamos
+ruta <- here("plots", "others", "2021_06_30_TEMP_AEMET", "fig7")
+ggsave(glue("{ruta}.pdf"),
+       width = 13, height = 8, device = cairo_pdf)
+pdftools::pdf_convert(glue("{ruta}.pdf"), filenames = glue("{ruta}.png"),
+                      format = "png", dpi = 300)
+```
+
 
 ```{r layout-radar}
 # Reajustamos el layout
@@ -383,10 +473,17 @@ fig5 <-
          paste0("Gráfico: Javier Álvarez Liébana (@DadosDeLaplace)\n",
                 "Inspirado en «Daily maximum temperatures in Portland ",
                 "from 1938–2021» (Cédric Scherer)"),
-       caption = "Datos: temperaturas extraídas del AEMET (Open Data API)") +
+       caption =
+         "Datos: temperaturas (1960-2021) extraídas del AEMET (Open Data API)") +
   scale_color_viridis_c(option = "turbo", direction = -1, name = NULL,
                         breaks = c(1961, seq(1970, 2020, by = 10), 2021))
 fig5
+# Exportamos
+ruta <- here("plots", "others", "2021_06_30_TEMP_AEMET", "fig5")
+ggsave(glue("{ruta}.pdf"),
+       width = 13, height = 8, device = cairo_pdf)
+pdftools::pdf_convert(glue("{ruta}.pdf"), filenames = glue("{ruta}.png"),
+                      format = "png", dpi = 300)
 ```
 
 ```{r fig6, fig.width = 13, fig.height = 8}
@@ -408,10 +505,17 @@ fig6 <-
          paste0("Gráfico: Javier Álvarez Liébana (@DadosDeLaplace)\n",
                 "Inspirado en «Daily maximum temperatures in Portland ",
                 "from 1938–2021» (Cédric Scherer)"),
-       caption = "Datos: temperaturas extraídas del AEMET (Open Data API)") +
+       caption =
+         "Datos: temperaturas (1960-2021) extraídas del AEMET (Open Data API)") +
   scale_color_viridis_c(option = "turbo", direction = -1, name = NULL,
                         breaks = c(1961, seq(1970, 2020, by = 10), 2021))
 fig6
+# Exportamos
+ruta <- here("plots", "others", "2021_06_30_TEMP_AEMET", "fig6")
+ggsave(glue("{ruta}.pdf"),
+       width = 13, height = 8, device = cairo_pdf)
+pdftools::pdf_convert(glue("{ruta}.pdf"), filenames = glue("{ruta}.png"),
+                      format = "png", dpi = 300)
 ```
 
 
