@@ -67,6 +67,7 @@ GPLv3](https://img.shields.io/badge/license-GPLv3-blue.svg)](https://www.gnu.org
   
 <!-- toc -->
 * **Contribuciones (contributions) 2021**
+  - 28/07/2021 [🧠🔀 Paradoja de Simpson / Simpson's paradox](https://github.com/dadosdelaplace/hilostwitter/tree/main/R/others/2021_07_simpson_paradox) 
   - 30/06/2021 [🌡 Evolución de las temperaturas máximas (1960-2021) en diferentes capitales de provincia / Daily max temperatures (1960-2021) of some Spanish cities](https://github.com/dadosdelaplace/hilostwitter/tree/main/R/others/2021_06_30_TEMP_AEMET) 
   - 17/06/2021 [📊🦖 Cuarteto de Anscombe / Anscombe's quartet](https://github.com/dadosdelaplace/hilostwitter/tree/main/plots/%23matesendomingo/2021_06_17_CUARTETO_ANSCOMBE)️
 <!-- tocstop -->
@@ -83,6 +84,21 @@ GPLv3](https://img.shields.io/badge/license-GPLv3-blue.svg)](https://www.gnu.org
 </details>
 
 ***
+
+###  [28/07/2021 🧠🔀 Paradoja de Simpson / Simpson's paradox](https://github.com/dadosdelaplace/hilostwitter/tree/main/R/others/2021_07_simpson_paradox)
+
+[🧶 HILO EN TWITTER / TWITTER THREAD](.)
+
+
+![](https://github.com/dadosdelaplace/hilostwitter/blob/main/plots/others/2021_07_simpson_paradox/fig3.png)
+*Paradoja de Simpson: datos agregados ofrecen conclusiones opuestas que el análisis desagregado por variable confusora (por grupo)*
+
+![](https://github.com/dadosdelaplace/hilostwitter/blob/main/plots/others/2021_07_simpson_paradox/fig1.png)
+*Datos agregados (generados con 4 normales bivariantes diferentes)*
+
+![](https://github.com/dadosdelaplace/hilostwitter/blob/main/plots/others/2021_07_simpson_paradox/fig2.png)
+*Datos desagagregados por grupos (generados con 4 normales bivariantes diferentes)*
+
 
 ###  [30/06/2021 🌡 Evolución de las temperaturas máximas (1960-2021) en diferentes capitales de provincia / Daily max temperatures (1960-2021) of some Spanish cities](https://github.com/dadosdelaplace/hilostwitter/tree/main/R/others/2021_06_30_TEMP_AEMET)
 
