@@ -1,0 +1,372 @@
+---
+title: "codigoR_simpson_paradox"
+author: "Javier Álvarez Liébana"
+date: "July 2021"
+output:
+  html_document:
+    theme: paper
+    highlight: kate
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r ajustes, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, fig.showtext = T, fig.retina = 1)
+```
+
+```{r preparacion, message = FALSE}
+rm(list = ls()) # borramos entorno
+# setwd(dirname(rstudioapi::getSourceEditorContext()$path)) # fijamos directorio
+# Instalamos paquetes necesarios
+repos <- "http://cran.us.r-project.org"
+if(!require(tidyverse)) install.packages("tidyverse", repos = repos)
+if(!require(purrr)) install.packages("purrr", repos = repos)
+if(!require(lubridate)) install.packages("lubridate", repos = repos)
+if(!require(ggplot2)) install.packages("ggplot2", repos = repos)
+if(!require(latex2exp)) install.packages("latex2exp", repos = repos)
+if(!require(ggthemes)) install.packages("ggthemes", repos = repos)
+if(!require(patchwork)) install.packages("patchwork", repos = repos)
+if(!require(here)) install.packages("here", repos = repos)
+if(!require(glue)) install.packages("glue", repos = repos)
+if(!require(pdftools)) install.packages("pdftools", repos = repos)
+if(!require(MASS)) install.packages("MASS", repos = repos)
+if(!require(cowplot)) install.packages("cowplot", repos = repos)
+if(!require(png)) install.packages("png", repos = repos)
+options("scipen" = 10)
+```
+
+```{r tema-base-fuentes-plots}
+# Fuentes para los gráficos
+library(showtext)
+font_add_google("Lobster Two", "lobstertwo")
+font_add_google("Poppins", "poppins")
+showtext_auto()
+font_add(family = "Simpsonfont", # Nombre que quieras usar
+         regular = "Simpsonfont DEMO.otf")
+
+# Tema base
+theme_set(theme_bw())
+theme_update(
+  legend.position = "right", # posición leyenda
+  # Fuentes y ajustes de la leyenda 
+  legend.text = element_text(size = 11, family = "Simpsonfont"),
+  legend.title = element_text(face = "bold", size = 13,
+                              family = "Simpsonfont"),
+  # Fuentes de los textos
+  text = element_text(family = "Simpsonfont", size = 15, color = "black"),
+  # Fuentes y ajustes de título, subtítulo y caption
+  plot.title = element_text(family = "Simpsonfont", size = 57,
+                            face = "bold", color = "#2a475e"),
+  plot.subtitle = element_text(family = "lobstertwo", size = 17,
+                               face = "bold", color = "black"),
+  plot.caption = element_text(size = 13, family = "lobstertwo"),
+  # Fuentes y ajustes de los ejes
+  axis.text = element_text(size = 13, color = "grey50",
+                           family = "Simpsonfont"),
+  axis.title = element_text(size = 17, family = "Simpsonfont"),
+  axis.ticks = element_blank(), axis.line = element_line(colour = "grey50"),
+  # Ajustes del grid
+  rect = element_blank(),
+  panel.grid = element_line(color = "#b4aea9"),
+  panel.grid.minor = element_blank(),
+  panel.grid.major.x = element_blank(),
+  panel.grid.major.y = element_line(linetype = "dashed"),
+  plot.background = element_rect(fill = "#fed90f", color = "#fed90f"),
+  # Márgenes
+  plot.margin = # márgenes
+    margin(t = 0.3, b = 0.3, r = 0.7, l = 0.7, "cm"))
+```
+
+```{r generar-grupos}
+# Fijamos semilla
+set.seed(123567)
+n <- 500
+
+# Grupo 1: n observaciones de correlación -0.8, media 5 y varianza 1.7
+media <- c(5, 5)
+varianza <- 1.7
+correlacion <- -0.8
+# Matriz de covarianzas
+sigma <- rbind(c(varianza, correlacion),
+               c(correlacion, varianza))
+grupo1 <- as.data.frame(mvrnorm(n = n, mu = media, Sigma = sigma))
+grupo1$grupo <- "grupo 1"
+
+# Grupo 2: n observaciones de correlación -0.9, media 8 y varianza 2.3
+media <- c(8, 8)
+varianza <- 2.3
+correlacion <- -0.9
+# Matriz de covarianzas
+sigma <- rbind(c(varianza, correlacion),
+               c(correlacion, varianza))
+grupo2 <- as.data.frame(mvrnorm(n = n, mu = media, Sigma = sigma))
+grupo2$grupo <- "grupo 2"
+
+# Grupo 3: n observaciones de correlación -0.8, media 11 y varianza 2.5
+media <- c(11, 11)
+varianza <- 2.5
+correlacion <- -0.8
+# Matriz de covarianzas
+sigma <- rbind(c(varianza, correlacion),
+               c(correlacion, varianza))
+grupo3 <- as.data.frame(mvrnorm(n = n, mu = media, Sigma = sigma))
+grupo3$grupo <- "grupo 3"
+
+# Grupo 4: n observaciones de correlación -0.9, media 14 y varianza 2
+media <- c(14, 14)
+varianza <- 2
+correlacion <- -0.9
+# Matriz de covarianzas
+sigma <- rbind(c(varianza, correlacion),
+               c(correlacion, varianza))
+grupo4 <- as.data.frame(mvrnorm(n = n, mu = media, Sigma = sigma))
+grupo4$grupo <- "grupo 4"
+
+# Juntamos grupos
+datos <- rbind(grupo1, grupo2, grupo3, grupo4)
+names(datos) <- c("x", "y", "grupo")
+```
+
+
+```{r fig1, fig.width = 13, fig.height = 8}
+# Figura todos juntos
+fig1 <-
+  # Pintamos puntos
+  ggplot(datos, aes(x = x, y = y)) +
+  geom_point(fill = "#D6E69F", shape = 21, size = 2.5,
+             alpha = 0.8, colour = "black", stroke = 1) +
+  geom_smooth(method = "lm", color = "black", size = 2) +
+  coord_cartesian(clip = "off") +
+  # Escala eje y
+  scale_y_continuous(breaks = seq(0, 20, by = 2.5)) +
+  # Escala eje x
+  scale_x_continuous(breaks = seq(0, 20, by = 2.5)) +
+  annotate(geom = "curve", x = 7, xend = 4, y = 13, yend = 16.5,
+           color = "black", curvature = -0.5, size = 1.1,
+           arrow = arrow(length = unit(3.5, "mm"))) +
+  annotate(geom = "text", x = 7, y = 17,
+           label =
+             paste0("Ajuste Y = ",
+                    round(lm(datos$y ~ datos$x)$coefficients[1], 1),
+                    " + ",
+                    round(lm(datos$y ~ datos$x)$coefficients[2], 1),
+                    "*X (R2 = ",
+                    round(summary(lm(datos$y ~ datos$x))$r.squared, 3),
+                    ")"),
+           hjust = "right", family = "lobstertwo", size = 8,
+           color = "black") +
+  labs(x = "Variable X", y = "Variable Y",
+       title = paste0("Paradoja de Simpson"),
+       subtitle =
+         paste0("Gráfico: Javier Álvarez Liébana • ",
+                "Inspirado en «Simpson's Paradox» (Alexandra Bagaini)"),
+       caption = "Datos: simulación propia de normales multivariantes") 
+fig1
+
+# Exportamos
+ruta <- here("plots", "others", "2021_07_simpson_paradox", "fig1")
+ggsave(glue("{ruta}.pdf"),
+       width = 13, height = 8, device = cairo_pdf)
+pdftools::pdf_convert(glue("{ruta}.pdf"), filenames = glue("{ruta}.png"),
+                      format = "png", dpi = 300)
+```
+
+```{r fig2, fig.width = 13, fig.height = 8}
+# Figura por grupos
+fig2 <-
+  # Pintamos puntos y coloreamos por grupos
+  ggplot(datos, aes(x = x, y = y, color = grupo)) +
+  geom_point(aes(fill = grupo), shape = 21, size = 2.5,
+             alpha = 0.8, colour = "black", stroke = 1) +
+  geom_smooth(method = "lm", aes(color = grupo), size = 2) +
+  coord_cartesian(clip = "off") +
+  # Escala eje y
+  scale_y_continuous(breaks = seq(0, 25, by = 2.5)) +
+  # Escala eje x
+  scale_x_continuous(breaks = seq(0, 25, by = 2.5)) +
+  # Escala de colores
+  scale_colour_manual(values =
+                        c("#7C7C7C", "#009DDC", "#F14E28", "#00947E")) +
+  scale_fill_manual(values =
+                      c("#7C7C7C", "#009DDC", "#F14E28", "#00947E")) +
+  annotate(geom = "text", x = 9, y = 2,
+           label =
+             paste0("Ajuste Y = ",
+                    round(lm((datos %>%
+                                filter(grupo == "grupo 1"))$y ~
+                               (datos %>%
+                                  filter(grupo == "grupo 1"))$x)$coefficients[1], 1),
+                    " - ",
+                    round(lm((datos %>%
+                                filter(grupo == "grupo 1"))$y ~
+                               (datos %>%
+                                  filter(grupo == "grupo 1"))$x)$coefficients[2], 1),
+                    "*X (R2 = ",
+                    round(summary(lm((datos %>%
+                                        filter(grupo == "grupo 1"))$y ~
+                                       (datos %>%
+                                          filter(grupo == "grupo 1"))$x))$r.squared, 3),
+                    ")"),
+           hjust = "left", family = "lobstertwo", size = 7,
+           color = "#7C7C7C") +
+  annotate(geom = "text", x = 12.5, y = 5.5,
+           label =
+             paste0("Ajuste Y = ",
+                    round(lm((datos %>%
+                                filter(grupo == "grupo 2"))$y ~
+                               (datos %>%
+                                  filter(grupo == "grupo 2"))$x)$coefficients[1], 1),
+                    " - ",
+                    round(lm((datos %>%
+                                filter(grupo == "grupo 2"))$y ~
+                               (datos %>%
+                                  filter(grupo == "grupo 2"))$x)$coefficients[2], 1),
+                    "*X (R2 = ",
+                    round(summary(lm((datos %>%
+                                        filter(grupo == "grupo 2"))$y ~
+                                       (datos %>%
+                                          filter(grupo == "grupo 2"))$x))$r.squared, 3),
+                    ")"),
+           hjust = "left", family = "lobstertwo", size = 7,
+           color = "#009DDC") +
+  annotate(geom = "text", x = 0.1, y = 13.5,
+           label =
+             paste0("Ajuste Y = ",
+                    round(lm((datos %>%
+                                filter(grupo == "grupo 3"))$y ~
+                               (datos %>%
+                                  filter(grupo == "grupo 3"))$x)$coefficients[1], 1),
+                    " - ",
+                    round(lm((datos %>%
+                                filter(grupo == "grupo 3"))$y ~
+                               (datos %>%
+                                  filter(grupo == "grupo 3"))$x)$coefficients[2], 1),
+                    "*X (R2 = ",
+                    round(summary(lm((datos %>%
+                                        filter(grupo == "grupo 3"))$y ~
+                                       (datos %>%
+                                          filter(grupo == "grupo 3"))$x))$r.squared, 3),
+                    ")"),
+           hjust = "left", family = "lobstertwo", size = 7,
+           color = "#F14E28") +
+  annotate(geom = "text", x = 1.5, y = 16.7,
+           label =
+             paste0("Ajuste Y = ",
+                    round(lm((datos %>%
+                                filter(grupo == "grupo 4"))$y ~
+                               (datos %>%
+                                  filter(grupo == "grupo 4"))$x)$coefficients[1], 1),
+                    " - ",
+                    round(lm((datos %>%
+                                filter(grupo == "grupo 4"))$y ~
+                               (datos %>%
+                                  filter(grupo == "grupo 4"))$x)$coefficients[2], 1),
+                    "*X (R2 = ",
+                    round(summary(lm((datos %>%
+                                        filter(grupo == "grupo 4"))$y ~
+                                       (datos %>%
+                                          filter(grupo == "grupo 4"))$x))$r.squared, 3),
+                    ")"),
+           hjust = "left", family = "lobstertwo", size = 7,
+           color = "#00947E") +
+  guides(fill = guide_legend(override.aes = list(size = 5))) +
+  guides(fill = guide_legend(override.aes = list(fill = NA))) +
+  labs(x = "Variable X", y = "Variable Y",
+       title = paste0("Paradoja de Simpson"),
+       subtitle =
+         paste0("Gráfico: Javier Álvarez Liébana • ",
+                "Inspirado en «Simpson's Paradox» (Alexandra Bagaini)"),
+       caption = "Datos: simulación propia de normales multivariantes") 
+fig2
+
+# Exportamos
+ruta <- here("plots", "others", "2021_07_simpson_paradox", "fig2")
+ggsave(glue("{ruta}.pdf"),
+       width = 13, height = 8, device = cairo_pdf)
+pdftools::pdf_convert(glue("{ruta}.pdf"), filenames = glue("{ruta}.png"),
+                      format = "png", dpi = 300)
+```
+
+
+```{r fig3, fig.width = 13, fig.height = 8}
+# Figuras conjuntas
+fig1a <-
+  # Pintamos puntos
+  ggplot(datos, aes(x = x, y = y)) +
+  geom_point(fill = "#D6E69F", shape = 21, size = 2.5,
+             alpha = 0.8, colour = "black", stroke = 1) +
+  geom_smooth(method = "lm", color = "black", size = 2) +
+  coord_cartesian(clip = "off") +
+  # Escala eje y
+  scale_y_continuous(breaks = seq(0, 20, by = 2.5)) +
+  # Escala eje x
+  scale_x_continuous(breaks = seq(0, 20, by = 2.5)) +
+  labs(x = "Variable X", y = "Variable Y") 
+
+fig2a <-
+  # Pintamos puntos y coloreamos por grupos
+  ggplot(datos, aes(x = x, y = y, color = grupo)) +
+  geom_point(aes(fill = grupo), shape = 21, size = 2.5,
+             alpha = 0.8, colour = "black", stroke = 1) +
+  geom_smooth(method = "lm", aes(color = grupo), size = 2) +
+  coord_cartesian(clip = "off") +
+  # Escala eje y
+  scale_y_continuous(breaks = seq(0, 25, by = 2.5)) +
+  # Escala eje x
+  scale_x_continuous(breaks = seq(0, 25, by = 2.5)) +
+  # Escala de colores
+  scale_colour_manual(values =
+                        c("#7C7C7C", "#009DDC", "#F14E28", "#00947E")) +
+  scale_fill_manual(values =
+                      c("#7C7C7C", "#009DDC", "#F14E28", "#00947E")) +
+  guides(fill = guide_legend(override.aes = list(size = 5))) +
+  guides(fill = guide_legend(override.aes = list(fill = NA))) +
+  labs(x = "Variable X", y = "Variable Y") 
+
+# imágenes
+img1 <- readPNG("Ralph_Wiggum.png", native = T)
+img2 <- readPNG("Homer_Simpson.png", native = T)
+
+# Juntamos gráficas
+fig3 <- fig1a + fig2a +
+  plot_annotation(
+    title = paste0("Paradoja de Simpson"),
+    subtitle =
+      paste0("La paradoja de Simpson (K. Pearson, 1899; E. H. Simpson, 1951) ",
+             "es una falacia estadística en\nla que la relación entre dos ",
+             "variables puede ser modificada o invertida\ncuando los ",
+             "datos se desagregan en función de variables confusoras ",
+             "subyacentes"),
+    caption =
+      paste0("Gráfico: Javier Álvarez Liébana • ",
+             "Inspirado en «Simpson's Paradox» (Alexandra Bagaini) • ",
+             "Datos: simulación propia • Imágenes: ",
+             "https://simpsons.fandom.com")) &
+      theme(plot.title = element_text(margin = margin(b = 5, t = 10),
+                                      hjust = 0.5),
+            plot.subtitle = element_text(margin = margin(b = 5, t = 5),
+                                         hjust = 0.5)) 
+
+# Juntamos con imágenes
+fig3 <- ggdraw() + draw_plot(fig3) +
+  # Imagen ralph
+  draw_image(img1, x = 0.5, y = 1, hjust = 0.5, vjust = 1.3,
+             valign = 0.5, width = 0.16) +
+  # Imagen homer
+  draw_image(img2, x = 1, y = 1, hjust = 0.9, vjust = 1.01,
+             halign = 1, valign = 1, width = 0.2)
+fig3
+
+# Exportamos
+ruta <- here("plots", "others", "2021_07_simpson_paradox", "fig3")
+ggsave(glue("{ruta}.pdf"),
+       width = 13, height = 8, device = cairo_pdf)
+pdftools::pdf_convert(glue("{ruta}.pdf"), filenames = glue("{ruta}.png"),
+                      format = "png", dpi = 300)
+```
+
+***
+
+```{r sesion}
+sessionInfo()
+```
