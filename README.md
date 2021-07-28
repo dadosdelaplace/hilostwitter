@@ -34,6 +34,8 @@ GPLv3](https://img.shields.io/badge/license-GPLv3-blue.svg)](https://www.gnu.org
 
 **Siéntete libre de utilizar** lo que aquí encuentres pero no se te olvide citarlo.
 
+(formato de repositorio inspirado en diferentes partes de los repositorios de [Tidyverse](https://github.com/tidyverse/ggplot2), [Eduardo García-Portugués](https://github.com/egarpor) [Moriah Taylor](https://github.com/moriahtaylor1), [Hadley Wickham](https://github.com/hadley/), [Yan Holtz](https://www.yan-holtz.com/) y [Cédric Scherer](https://github.com/z3tt/TidyTuesday), y conversaciones con Gabriel Valverde, Alejandra López-Pérez y [Dominic Royé][https://twitter.com/dr_xeo])
+
 ---
 
 **R codes** to complement my contributions on statistics and dataviz in Twitter [Twitter (@DadosDeLaplace)](https://twitter.com/dadosdelaplace), and about the Twitter threads [#MatesEnDomingo](https://twitter.com/i/events/1398580673221378049), mainly focused on packages [`{dplyr}`](https://github.com/rstudio/cheatsheets/blob/master/data-transformation.pdf), [`{ggplot2}`](https://github.com/rstudio/cheatsheets/blob/master/data-visualization-2.1.pdf), [`{lubridate}`](https://rawgit.com/rstudio/cheatsheets/master/lubridate.pdf), [`{plotly}`](https://plotly.com/r/) y [`{tidyr}`](https://github.com/rstudio/cheatsheets/blob/master/data-import.pdf), and other packages that are part of [`{tidyverse}`](https://www.tidyverse.org/packages/) environment. You'll also be able to access to some codes to complement my contributions in [Instagram](instagram.com/javieralvarezliebana).
@@ -41,6 +43,8 @@ GPLv3](https://img.shields.io/badge/license-GPLv3-blue.svg)](https://www.gnu.org
 **Feel free to use** any of the contents but don't forget to cite them.
 
 ---
+
+:warning: **ATRIBUCIÓN**: debido a una polémica en Twitter, a colación de un gráfico en el que se me olvidó mencionar dentro del plot al autor de la idea, se ha incorporada dicha cita y revisado detenidamente que todas las citas a ideas, visualizaciones o datos estén, no solo debidamente citadas DENTRO de las gráficas (como siempre lo estuvieron), sino también en este readme, incluyendo los links a los repositorios de GitHub pertinentes así como sus redes sociales (en caso de poder encontrarlas o conocerlas, ya que no siempre llegan a mi conocimiento a través de Twitter). Mis disculpas públicas a las personas que pudieron verse afectadas por considerar que, amén de en el interior del gráfico, la cita debía estar visible otros lugares (como en el readme o en mención de Twitter). Cualquier conflicto en atribución, bien por olvido (sin ánimo de robar contenido ajeno) o bien porque hayamos hecho gráficas similares de forma paralela (sin conocimiento), se ruega mandar un mensaje por privado a la cuenta de Twitter para solventarlo lo antes posible como es debido.
 
 > **DISCLAIMER:**  
 ⛔️ Los gráficos aquí generados NO llevan incorporada ningún tipo de edición fotografíca (no Illustrator or Photoshop was used).<br> 
@@ -89,6 +93,9 @@ GPLv3](https://img.shields.io/badge/license-GPLv3-blue.svg)](https://www.gnu.org
 
 [🧶 HILO EN TWITTER / TWITTER THREAD](https://twitter.com/DadosdeLaplace/status/1420294893797355526)
 
+:warning: **ATRIBUCIÓN**: visualización adaptada del código de [Alexandra Bagaïni](https://twitter.com/a_bagaini). Link a su repositorio Github: https://github.com/abagaini/30DayChartChallenge/tree/main/2021/day_13
+
+📊 **DATOS**: simulación propia (datos distintos a los usados del paquete `{correlation}` usado por Alexandra.
 
 ![](https://github.com/dadosdelaplace/hilostwitter/blob/main/plots/others/2021_07_simpson_paradox/fig3.png)
 *Paradoja de Simpson: datos agregados ofrecen conclusiones opuestas que el análisis desagregado por variable confusora (por grupo)*
@@ -103,6 +110,10 @@ GPLv3](https://img.shields.io/badge/license-GPLv3-blue.svg)](https://www.gnu.org
 ###  [30/06/2021 🌡 Evolución de las temperaturas máximas (1960-2021) en diferentes capitales de provincia / Daily max temperatures (1960-2021) of some Spanish cities](https://github.com/dadosdelaplace/hilostwitter/tree/main/R/others/2021_06_30_TEMP_AEMET)
 
 [🧶 HILO EN TWITTER / TWITTER THREAD](https://twitter.com/DadosdeLaplace/status/1410255510629228554)
+
+:warning: **ATRIBUCIÓN**: visualización adaptada del código de [Cédric Scherer](https://twitter.com/CedScherer). Link a su repositorio Github: https://github.com/z3tt/TidyTuesday. Gráficos de radar inspirados en las visualizaciones de [Dominic Royé](https://twitter.com/dr_xeo) mostradas por Twitter.
+
+📊 **DATOS**: AEMET.
 
 :warning: **IMPORTANTE**: solo se muestran las gráficas de Madrid pero en el [código R](https://github.com/dadosdelaplace/hilostwitter/tree/main/R/others/2021_06_30_TEMP_AEMET) se explica como replicarlo con cualquier estación AEMET de España.
 
@@ -126,6 +137,10 @@ GPLv3](https://img.shields.io/badge/license-GPLv3-blue.svg)](https://www.gnu.org
 ###  [27/06/2021 🗳⛑ Sorteo de Vietnam de 1969 / Draft Lottery (Vietnam) of 1969](https://github.com/dadosdelaplace/hilostwitter/tree/main/plots/%23matesendomingo/2021_07_27_DRAFT_LOTTERY_VIETNAM)
 
 [🧶 HILO EN TWITTER / TWITTER THREAD](https://twitter.com/DadosdeLaplace/status/1409178160860733443)
+
+:warning: **ATRIBUCIÓN**: la gráfica de ratings es una visualización adaptada del código de [Cédric Scherer](https://twitter.com/CedScherer). Link a su repositorio Github: https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_12. Para el resto de gráficas no me he inspirado (al menos conscientemente) en ninguna otra visualización. De haber un conflicto de atribución, se ruega mandar un mensaje privado a Twitter lo antes posible solventarlo.
+
+📊 **DATOS**: extraídos de los draft recopilados en https://www.randomservices.org/random/data/Draft.html
 
 ![](https://github.com/dadosdelaplace/hilostwitter/blob/main/plots/%23matesendomingo/2021_07_27_DRAFT_LOTTERY_VIETNAM/fig12.png)
 *Gráfico de rating, que compara las papeletas de cada mes con el resto pero también con su media mensual: los que estén por encima de 195 fueron reclutados (el tamaño de los puntos depende de la media del número de papeleta de dicho mes)*
@@ -154,6 +169,10 @@ GPLv3](https://img.shields.io/badge/license-GPLv3-blue.svg)](https://www.gnu.org
 
 [📸 INFOGRAFÍA EN INSTAGRAM / CONTRIBUTION ON INSTAGRAM](https://www.instagram.com/javieralvarezliebana/)
 
+:warning: **ATRIBUCIÓN**: no me he inspirado (al menos conscientemente) en ninguna otra visualización. De haber un conflicto de atribución, se ruega mandar un mensaje privado a Twitter lo antes posible solventarlo.
+
+📊 **DATOS**: simulación propia.
+
 ![](https://github.com/dadosdelaplace/hilostwitter/blob/main/plots/%23matesendomingo/2021_06_22_PASSING_EXAMS/fig1.png)
 *Probabilidad de saberse {0, 1, 2, 3, 4, 5} temas en unas oposiciones de 71 temas y 5 bolas*
 
@@ -164,6 +183,10 @@ GPLv3](https://img.shields.io/badge/license-GPLv3-blue.svg)](https://www.gnu.org
 ***
 
 ### [17/06/2021 📊🦖 Cuarteto de Anscombe / Anscombe's quartet](https://github.com/dadosdelaplace/hilostwitter/tree/main/plots/%23matesendomingo/2021_06_17_CUARTETO_ANSCOMBE)
+
+:warning: **ATRIBUCIÓN**: el gráfico del datasaurus está inspirado en el experimento generado por [Alberto Cairo](http://www.thefunctionalart.com/2016/08/download-datasaurus-never-trust-summary.html). El resto de gráficos no me he inspirado (al menos conscientemente) en ninguna otra visualización. De haber un conflicto de atribución, se ruega mandar un mensaje privado a Twitter lo antes posible solventarlo.
+
+📊 **DATOS**: obtenidos de los paquetes `{datasets}` y `{datasauRus}`
 
 [🧶 HILO EN TWITTER / TWITTER THREAD](https://twitter.com/DadosdeLaplace/status/1405572972912562181)
 
@@ -191,6 +214,11 @@ GPLv3](https://img.shields.io/badge/license-GPLv3-blue.svg)](https://www.gnu.org
 ### [06/06/2021 🎲👻 La historia de la campana de Gauss / The history of Gaussian distribution](https://github.com/dadosdelaplace/hilostwitter/tree/main/plots/%23matesendomingo/2021_06_06_CENTRAL_LIMIT_THEOREM)
 
 [🧶 HILO EN TWITTER / TWITTER THREAD](https://twitter.com/DadosdeLaplace/status/1401584861043908610)
+
+:warning: **ATRIBUCIÓN**: no me he inspirado (al menos conscientemente) en ninguna otra visualización. De haber un conflicto de atribución, se ruega mandar un mensaje privado a Twitter lo antes posible solventarlo.
+
+📊 **DATOS**: simulación propia.
+
 
 ![](https://github.com/dadosdelaplace/hilostwitter/blob/main/plots/%23matesendomingo/2021_06_06_CENTRAL_LIMIT_THEOREM/fig1.png)
 *Distribuciones normales (campanas de Gauss) para diferentes medias y desviaciones típicas*
@@ -229,12 +257,15 @@ GPLv3](https://img.shields.io/badge/license-GPLv3-blue.svg)](https://www.gnu.org
 [🧶 HILO EN TWITTER / TWITTER THREAD](https://twitter.com/DadosdeLaplace/status/1315224410165444608)
 [📸 INFOGRAFÍA EN INSTAGRAM / CONTRIBUTION ON INSTAGRAM](https://www.instagram.com/p/CHF5SW3lwpl/)
 
+:warning: **ATRIBUCIÓN**: visualización adaptada del código de [Cédric Scherer](https://twitter.com/CedScherer). Link a su repositorio Github: https://github.com/z3tt/TidyTuesday#week-202014--beer-production-by-ttb. La gráfica se publicó erróneamente sin citar la fuente original del diseño de la gráfica en el cual me basé y adapté, error grave por el que pido las disculpas públicas pertinentes (y así lo hago constar públicamente en este repositorio).
+
+📊 **DATOS**: recopilación propia a partir de los seguidores de Instagram y Twitter.
+
 ![](https://github.com/dadosdelaplace/hilostwitter/blob/main/plots/%23matesendomingo/2020_10_11_BENFORD_LAW_COVID/fig1.png)
 *Ley de Benford: distribución de frecuencias del primer dígito en páginas aleatorias de libros*
 
 ![](https://github.com/dadosdelaplace/hilostwitter/blob/main/plots/%23matesendomingo/2020_10_11_BENFORD_LAW_COVID/fig2.png)
 *Ley de Benford: distribución de frecuencias del primer dígito de los casos diarios covid en cada provincia*
-
 
 ***
 
