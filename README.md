@@ -87,7 +87,7 @@ GPLv3](https://img.shields.io/badge/license-GPLv3-blue.svg)](https://www.gnu.org
 
 ###  [28/07/2021 🧠🔀 Paradoja de Simpson / Simpson's paradox](https://github.com/dadosdelaplace/hilostwitter/tree/main/R/others/2021_07_simpson_paradox)
 
-[🧶 HILO EN TWITTER / TWITTER THREAD](.)
+[🧶 HILO EN TWITTER / TWITTER THREAD](https://twitter.com/DadosdeLaplace/status/1420294893797355526)
 
 
 ![](https://github.com/dadosdelaplace/hilostwitter/blob/main/plots/others/2021_07_simpson_paradox/fig3.png)
