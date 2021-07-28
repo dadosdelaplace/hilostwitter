@@ -53,7 +53,7 @@ theme_set(theme_minimal(base_family = "Bangers"))
 theme_update(
   # Fuentes de los textos
   text = element_text(size = 15),
-  plot.caption = element_text(size = 15, color = "white",
+  plot.caption = element_text(size = 11, color = "white",
                               family = "Roboto Mono"),
   # Fuentes y ajustes de los ejes
   axis.text.x = element_text(size = 15, color = "white",
@@ -76,8 +76,8 @@ theme_update(
 ```{r carga-datos}
 # Datos de casos por provincias del ISCIII
 url_isciii_prov <-
-  paste0("https://raw.githubusercontent.com/dadosdelaplace/hilostwitter/",
-         "main/R/%23matesendomingo/2020_10_11_BENFORD_LAW_COVID/",
+  paste0("https://raw.githubusercontent.com/dadosdelaplace/hilostwitter",
+         "/main/R/%23matesendomingo/2020_10_11_BENFORD_LAW_COVID/",
          "datos_ISCIII.csv")
 datos <- read.csv(url_isciii_prov)
 ```
@@ -172,7 +172,9 @@ fig1 <-
            family = "Roboto Mono", fontface = "bold", lineheight = .99,
            color = "#f9e556", size = 5, hjust = "left") +
   labs(caption = paste0("Datos: primer dígito de las páginas de ",
-                        "los libros de seguidores de Instagram"),
+                        "los libros de seguidores de Instagram • ",
+                        "Inspirado en «Beer Production by TTB» ",
+                        "de Cédric Scherer"),
        x = "Dígitos del 1 al 9", y = "Proporción") +
   theme(legend.box.spacing =  unit(2.7, "cm"))
 fig1
@@ -241,7 +243,9 @@ fig2 <-
            family = "Roboto Mono", fontface = "bold", lineheight = .99,
            color = "#f9e556", size = 5, hjust = "left") +
   labs(caption = paste0("Datos: primer dígito de las páginas de ",
-                        "los libros de seguidores de Instagram"),
+                        "los libros de seguidores de Instagram • ",
+                        "Inspirado en «Beer Production by TTB» ",
+                        "de Cédric Scherer"),
        x = "Dígitos del 1 al 9", y = "Proporción") +
   theme(legend.box.spacing =  unit(2.7, "cm"))
 fig2
