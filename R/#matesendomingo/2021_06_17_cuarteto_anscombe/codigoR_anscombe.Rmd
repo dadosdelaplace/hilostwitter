@@ -19,22 +19,23 @@ rm(list = ls()) # borramos entorno
 # setwd(dirname(rstudioapi::getSourceEditorContext()$path)) # fijamos directorio
 # Instalamos paquetes necesarios
 repos <- "http://cran.us.r-project.org"
-if(!require(ggplot2)) install.packages("ggplot2", repos = repos)
-if(!require(latex2exp)) install.packages("latex2exp", repos = repos)
-if(!require(tidyverse)) install.packages("tidyverse", repos = repos)
-if(!require(lubridate)) install.packages("lubridate", repos = repos)
-if(!require(ggthemes)) install.packages("ggthemes", repos = repos)
-if(!require(patchwork)) install.packages("patchwork", repos = repos)
-if(!require(colorspace)) install.packages("colorspace", repos = repos)
-if(!require(calendR)) install.packages("calendR", repos = repos)
+
+# Básicos
 if(!require(here)) install.packages("here", repos = repos)
 if(!require(glue)) install.packages("glue", repos = repos)
+if(!require(tidyverse)) install.packages("tidyverse", repos = repos)
+if(!require(patchwork)) install.packages("patchwork", repos = repos)
 if(!require(pdftools)) install.packages("pdftools", repos = repos)
-if(!require(ggdist)) install.packages("ggdist", repos = repos)
-if(!require(gghalves)) devtools::install_github("erocoar/gghalves")
+
+# Necesarios para esta visualización
+if(!require(latex2exp)) install.packages("latex2exp", repos = repos)
+if(!require(ggthemes)) install.packages("ggthemes", repos = repos)
+if(!require(reactable)) install.packages("reactable", repos = repos)
 if(!require(datasauRus)) install.packages("datasauRus", repos = repos)
+if(!require(ggdist)) install.packages("gganimate", repos = repos)
+if(!require(colorspace)) install.packages("colorspace", repos = repos)
 if(!require(gganimate)) install.packages("gganimate", repos = repos)
-if(!require(grid)) install.packages("grid", repos = repos)
+if(!require(ggthemes)) install.packages("gganimate", repos = repos)
 ```
 
 ```{r tema-base-fuentes-plots}
@@ -73,7 +74,7 @@ theme_update(
     element_rect(fill = "#fbf9f4", color = "#fbf9f4"),
   # Márgenes
   plot.margin = # márgenes
-    margin(t = 0.5, b = 0.5, r = 0.9, l = 0.9, "cm"))
+    margin(t = 0.5, b = 0.5, r = 0.5, l = 0.5, "cm"))
 ```
 
 ```{r datos}
@@ -87,7 +88,8 @@ datos_anscombe <-
 datos_anscombe <- datos_anscombe %>% group_by(par) %>%
   mutate(mediana_x = median(x), mediana_y = median(y),
          media_x = mean(x), media_y = mean(y),
-         sd_x = sd(x), sd_y = sd(y))
+         sd_x = sd(x), sd_y = sd(y), var_x = var(x),
+         var_y = var(y))
 
 # Paleta de colores
 pal <- c("#4E79A7", "#F28E2B", "#E15759",  "#76B7B2")
@@ -97,6 +99,25 @@ datos_anscombe1 <- datos_anscombe %>% filter(par == 1)
 datos_anscombe2 <- datos_anscombe %>% filter(par == 2)
 datos_anscombe3 <- datos_anscombe %>% filter(par == 3)
 datos_anscombe4 <- datos_anscombe %>% filter(par == 4)
+```
+
+```{r tabla}
+options(reactable.theme = reactableTheme(
+  color = "hsl(215, 0%, 100%)",
+  backgroundColor = "hsl(233, 9%, 19%)",
+  borderColor = "hsl(215, 0%, 100%)",
+  stripedColor = "hsl(233, 12%, 22%)",
+  highlightColor = "hsl(233, 12%, 24%)")
+)
+
+resumen <- datos_anscombe %>% group_by(par) %>%
+  summarize("Media de X" = round(mean(x), 2),
+            "Media de Y" = round(mean(y), 2),
+            "Varianza de X" = round(var(x), 2),
+            "Varianza de Y" = round(var(y), 2),
+            "Correlación X vs Y" = round(cor(x, y), 2))
+
+reactable(resumen, striped = TRUE)
 ```
    
 ```{r fig1, fig.width = 13, fig.height = 8}
@@ -639,9 +660,17 @@ pdftools::pdf_convert(glue("{ruta}.pdf"), filenames = glue("{ruta}.png"),
 
 # Creamos las anotaciones por figura
 anotaciones <- datasaurus_dozen %>% group_by(dataset) %>%
-  summarize(MEDIA_X = mean(x), MEDIA_Y = mean(y),
-            VARIANZA_X = var(x), VARIANZA_Y = var(y),
-            CORRELACION_XY = cor(x, y))
+  mutate(media_x = mean(x), media_y = mean(y),
+         var_x = var(x), var_y = var(y),
+         cor_xy = cor(x, y),
+         texto = glue("Media X = {round(media_x, 1)}
+                      Varianza X = {round(var_x, 1)}
+                      Media Y = {round(media_y, 1)}
+                      Varianza Y = {round(var_y, 1)}
+                      Corr(X, Y) = {round(cor_xy, 1)}")) %>%
+  ungroup()
+  
+
 fig11 <-
   ggplot(datasaurus_dozen,
          # Color en función del conjunto
@@ -649,27 +678,24 @@ fig11 <-
   geom_point(size = 9, alpha = 0.5, show.legend = FALSE) +
   # Escala de colores en gradiente
   scale_color_gradient2_tableau("Red-Blue Diverging") +
-  # Transiciones y fade-in/fade-out
-  transition_states(dataset, 3, 1) + enter_fade() + exit_fade() +
+  # Anotaciones de los cálculos
+  geom_text(data = anotaciones %>% group_by(dataset) %>% slice(1),
+            aes(x = 83, y = 5, label = texto),
+            color = "black", hjust = 0, vjust = -1.5,
+            size = 4) +
   ggtitle("THE DATASAURUS DOZEN\n") +
   labs(subtitle =
          paste0("Gráficos: J. Álvarez Liébana | ",
                 "Datos: Alberto Cairo")) +
-  geom_text(data = anotaciones,
-            aes(x = 50, y = Inf,
-                label = paste0("Media x = ", round(MEDIA_X, 1),
-                               ", Media y = ", round(MEDIA_Y, 1),
-                               "\nDesv. típica x = ",
-                               round(sqrt(VARIANZA_X), 1),
-                               ", Desv. típica y = ",
-                               round(sqrt(VARIANZA_Y), 1),
-                               "\nCorrelación (X, Y) = ",
-                               round(CORRELACION_XY, 1)),
-                color = as.numeric(as.factor(dataset))),
-            vjust = -1.45, hjust = 0, size = 5) +
   coord_cartesian(clip = "off") +
-  theme(legend.position = "none")  # sin leyenda
-fig11
+  theme(legend.position = "none") + # sin leyenda
+  # Transiciones y fade-in/fade-out
+  transition_states(dataset, 3, 1) + enter_fade() + exit_fade()
+
+# Animación
+animacion <- animate(fig11, nframes = 100, fps = 5,
+                     width = 1650, height = 2000)
+animacion
 
 # Exportamos
 ruta <- here("plots", "#matesendomingo",
