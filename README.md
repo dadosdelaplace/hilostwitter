@@ -30,6 +30,8 @@ GPLv3](https://img.shields.io/badge/license-GPLv3-blue.svg)](https://www.gnu.org
 </div>
 
 
+## 🔗 www.dadosdelaplace.com
+
 **Códigos realizados en R** que complementan los hilos de divulgación estadística y de visualización de datos en [Twitter (@DadosDeLaplace)](https://twitter.com/dadosdelaplace) y los hilos de [#MatesEnDomingo](https://twitter.com/i/events/1398580673221378049), principalmente realizados con los paquetes de [`{dplyr}`](https://github.com/rstudio/cheatsheets/blob/master/data-transformation.pdf), [`{ggplot2}`](https://github.com/rstudio/cheatsheets/blob/master/data-visualization-2.1.pdf), [`{lubridate}`](https://rawgit.com/rstudio/cheatsheets/master/lubridate.pdf), [`{plotly}`](https://plotly.com/r/) y [`{tidyr}`](https://github.com/rstudio/cheatsheets/blob/master/data-import.pdf), así como otros paquetes, principalmente del entorno [`{tidyverse}`](https://www.tidyverse.org/packages/). También podrás encontrar algunos códigos que complementan la divulgación realizada en [Instagram](instagram.com/javieralvarezliebana).
 
 **Siéntete libre de utilizar** lo que aquí encuentres pero no se te olvide citarlo.
