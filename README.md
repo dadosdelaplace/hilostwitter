@@ -19,18 +19,24 @@ GPLv3](https://img.shields.io/badge/license-GPLv3-blue.svg)](https://www.gnu.org
             alt="chat on Discord"></a> --->
 
 
-<div align="center">
-            
-### ✨ Algunas redes donde puedes encontrarme (social networks where you can follow me) :man_technologist:👀👇🏻
- 
-<a href="https://twitter.com/dadosdelaplace"><img border="0" alt="Twitter" src="https://assets.dryicons.com/uploads/icon/svg/8385/c23f7ffc-ca8d-4246-8978-ce9f6d5bcc99.svg" width="40" height="40"></a>
-<a href="https://instagram.com/javieralvarezliebana"><img border="0" alt="Instagram" src="https://logodownload.org/wp-content/uploads/2017/04/instagram-logo-3.png" width="40" height="40"></a>
-<a href="https://t.me/dadosdelaplace"><img border="0" alt="Telegram" src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/83/Telegram_2019_Logo.svg/1024px-Telegram_2019_Logo.svg.png" width="40" height="40"></a>
-<a href="mailto:alvarezljavier@uniovi.es"><img border="0" alt="Email" src="https://assets.dryicons.com/uploads/icon/svg/8007/c804652c-fae4-43d7-b539-187d6a408254.svg" width="40" height="40"></a>
+<div align="left">
+
+<a href="https://twitter.com/dadosdelaplace"><img border="0" alt="Twitter" src="https://assets.dryicons.com/uploads/icon/svg/8385/c23f7ffc-ca8d-4246-8978-ce9f6d5bcc99.svg" width="30" height="30"></a>
+  <a href="https://instagram.com/javieralvarezliebana"><img border="0" alt="Instagram" src="https://logodownload.org/wp-content/uploads/2017/04/instagram-logo-3.png" width="30" height="30"></a>
+  <a href="https://t.me/dadosdelaplace"><img border="0" alt="Telegram" src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/83/Telegram_2019_Logo.svg/1024px-Telegram_2019_Logo.svg.png" width="30" height="30"></a>
+  <a href="https://cartasdelaplace.com"><img border="0" alt="Newsletter" src="https://assets.dryicons.com/uploads/icon/svg/8007/c804652c-fae4-43d7-b539-187d6a408254.svg" width="30" height="30"></a>     
+  
+<h1 style="font-weight:normal" align="left">
+  &nbsp;Bienvenido/a, aquí Javi (@DadosDeLaplace) :wave:
+</h1>
+
 </div>
+<div align="left">
+            
 
+<div style="text-align: left;"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5a/Patreon_logomark.svg/1024px-Patreon_logomark.svg.png"  width="70" height="70" alt="Patreon">Puedes <b>contribuir al proyecto de divulgación estadística</b> pagando dos cafés ☕️ en la comunidad <a href="https://patreon.com/dadosdelaplace">Patreon</a></div>
 
-## 🔗 www.dadosdelaplace.com
+&nbsp;
 
 **Códigos realizados en R** que complementan los hilos de divulgación estadística y de visualización de datos en [Twitter (@DadosDeLaplace)](https://twitter.com/dadosdelaplace) y los hilos de [#MatesEnDomingo](https://twitter.com/i/events/1398580673221378049), principalmente realizados con los paquetes de [`{dplyr}`](https://github.com/rstudio/cheatsheets/blob/master/data-transformation.pdf), [`{ggplot2}`](https://github.com/rstudio/cheatsheets/blob/master/data-visualization-2.1.pdf), [`{lubridate}`](https://rawgit.com/rstudio/cheatsheets/master/lubridate.pdf), [`{plotly}`](https://plotly.com/r/) y [`{tidyr}`](https://github.com/rstudio/cheatsheets/blob/master/data-import.pdf), así como otros paquetes, principalmente del entorno [`{tidyverse}`](https://www.tidyverse.org/packages/). También podrás encontrar algunos códigos que complementan la divulgación realizada en [Instagram](instagram.com/javieralvarezliebana).
 
